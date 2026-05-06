@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct SimpleStepTrackerApp: App {
@@ -13,5 +14,7 @@ struct SimpleStepTrackerApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [WalkGroup.self, WalkSession.self])
     }
 }
+
