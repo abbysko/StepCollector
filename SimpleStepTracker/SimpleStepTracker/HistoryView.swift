@@ -9,22 +9,6 @@ import SwiftUI
 import Charts
 import SwiftData
 
-struct DailyWalkTotal: Identifiable {
-    let day: Date
-    let totalDuration: TimeInterval
-    let totalSteps: Int
-    
-    var id: Date { day }
-}
-
-struct CumulativeTotals: Identifiable {
-    let time: Date
-    let cumulativeSteps: Int
-    let cumulativeDuration: TimeInterval
-    
-    var id: Date { time }
-}
-
 struct HistoryView: View {
     @State private var selectedMetric: Metric = .steps
     

@@ -47,15 +47,9 @@ struct TrackingView: View {
         .padding()
     }
     
-    // derived state
-    var isTracking: Bool {
-        startTime != nil && !isPaused
-    }
-    
     // view elements
     private var startButton: some View {
         Button("Start Tracking") {
-            print("start pressed")
             if startTime == nil {
                 startTime = Date()
             }
@@ -68,7 +62,7 @@ struct TrackingView: View {
     
     private var stopButton: some View{
         Button("Stop Tracking") {
-            print("stop pressed")
+
             isPaused = true
             pausedDate = Date()
         }
@@ -112,7 +106,6 @@ struct TrackingView: View {
     private var saveProgressGroup: some View {
         HStack(spacing: 12) {
             Button("Save Progress") {
-                print("Save Progress tapped")
                 Task {
                     guard let start = startTime,
                           let selectedGroup else { return }
@@ -124,7 +117,6 @@ struct TrackingView: View {
                     do {
                         steps = try await healthKitManager.fetchStepCount(from: start, to: endTime)
                     } catch {
-                        print("Failed to fetch steps: \(error)")
                         steps = -999
                     }
                     
@@ -184,7 +176,7 @@ struct TrackingView: View {
             currentStepCount = try await healthKitManager.fetchStepCount(from: startTime, to: current)
             lastStepRefresh = current
         } catch {
-            print("Failed to fetch live steps: \(error)")
+            // step count unavailable; retain last known value
         }
     }
     
