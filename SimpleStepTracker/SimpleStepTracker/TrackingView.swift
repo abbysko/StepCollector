@@ -90,7 +90,7 @@ struct TrackingView: View {
                     VStack(spacing: 28) {
                         metricBlock(
                             title: "Time",
-                            value: formattedElapsedTime(from: startTime, to: current),
+                            value: current.timeIntervalSince(startTime).stopwatchFormatted,
                             tint: .green
                         )
 
@@ -163,15 +163,6 @@ struct TrackingView: View {
                 Text("This will remove your current tracking session.")
             }
         }
-    }
-    
-    private func formattedElapsedTime(from start: Date, to end: Date) -> String {
-        let elapsed = max(0, Int(end.timeIntervalSince(start)))
-        let hours = elapsed / 3600
-        let minutes = (elapsed % 3600) / 60
-        let seconds = elapsed % 60
-        
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
     
     private func stepRefreshTriggerDate(for current: Date) -> Date {

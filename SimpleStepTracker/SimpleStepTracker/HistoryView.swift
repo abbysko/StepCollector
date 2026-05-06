@@ -104,7 +104,7 @@ struct HistoryView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(session.start.formatted(date: .abbreviated, time: .shortened))")
                     
-                    Text("\(String(session.stepCount)) steps; \(formattedDuration(session.duration))")
+                    Text("\(String(session.stepCount)) steps; \(session.duration.durationFormatted)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -195,20 +195,6 @@ struct HistoryView: View {
             .sorted { $0.day < $1.day }
     }
     
-    private func formattedDuration(_ duration: TimeInterval) -> String {
-        let totalSeconds = Int(duration)
-        let hours = totalSeconds / 3600
-        let minutes = (totalSeconds % 3600) / 60
-        let seconds = totalSeconds % 60
-        
-        if hours > 0 {
-            return String(format: "%d hr %d min", hours, minutes)
-        } else if minutes > 0 {
-            return String(format: "%d min %d sec", minutes, seconds)
-        } else {
-            return String(format: "%d sec", seconds)
-        }
-    }
 }
 
 #Preview("Default"){
