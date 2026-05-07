@@ -20,7 +20,6 @@ A SwiftUI iOS app for tracking walks with live step updates. Built with SwiftDat
 | `HomeView.swift` | Management of walk groups (create, read, update, delete) |
 | `TrackingView.swift` | Live session tracking, CoreMotion pedometer updates, save/reset flow |
 | `HistoryView.swift` | Charts and session list for a selected group |
-| `HeaderView.swift` | Shared header component used across tabs |
 | `DataModels.swift` | SwiftData models (`WalkGroup`, `WalkSession`) and history aggregation structs |
 | `Formatters.swift` | Shared time interval formatting utilities |
 

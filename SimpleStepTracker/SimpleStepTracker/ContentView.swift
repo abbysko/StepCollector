@@ -14,10 +14,6 @@ struct ContentView: View {
     @State private var selectedGroup: WalkGroup? = nil
     
     var body: some View {
-        allTabsView
-    }
-    
-    private var allTabsView: some View {
         TabView {
             homeTabView
                 .tabItem {
@@ -38,36 +34,27 @@ struct ContentView: View {
     }
     
     private var homeTabView: some View {
-        VStack {
-            HeaderView(title: "Welcome!")
-            Spacer()
+        NavigationStack {
             HomeView(selectedGroup: $selectedGroup)
-                .frame(maxHeight: .infinity, alignment: .center)
-                .padding()
-            Spacer()
+                .navigationTitle("Welcome!")
         }
-        .frame(maxHeight: .infinity, alignment: .center)
     }
     
-    private var trackTabView: some View{
-        VStack {
-            HeaderView(title: "Track Steps")
-            Spacer()
+    private var trackTabView: some View {
+        NavigationStack {
             TrackingView(
                 startTime: $startTime,
                 isPaused: $isPaused,
                 selectedGroup: $selectedGroup
             )
-            Spacer()
+            .navigationTitle("Track Steps")
         }
     }
     
-    private var historyTabView: some View{
-        VStack {
-            HeaderView(title: "History")
-            Spacer()
+    private var historyTabView: some View {
+        NavigationStack {
             HistoryView(selectedGroup: $selectedGroup)
-            Spacer()
+                .navigationTitle("History")
         }
     }
 }
