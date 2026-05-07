@@ -9,7 +9,6 @@ import SwiftUI
 import CoreMotion
 
 struct TrackingView: View {
-    let healthKitManager: HealthKitManager
     
     @Binding var startTime: Date?
     @Binding var isPaused: Bool
@@ -18,7 +17,6 @@ struct TrackingView: View {
     @State private var showingClearConfirmation = false
     @State private var pausedDate: Date? = nil
     @State private var currentStepCount = 0
-    @State private var lastStepRefresh: Date? = nil
     @State private var pedometer = CMPedometer()
     @State private var isPedometerRunning = false
     
@@ -59,7 +57,6 @@ struct TrackingView: View {
                 startTime = startedAt
                 pausedDate = nil
                 currentStepCount = 0
-                lastStepRefresh = nil
                 startPedometerUpdates(from: startedAt)
             }
             isPaused = false
@@ -105,9 +102,6 @@ struct TrackingView: View {
                         )
                     }
                     .padding(.top, 8)
-                    .task(id: stepRefreshTriggerDate(for: current)) {
-                        await refreshLiveStepsIfNeeded(current: current, startTime: startTime)
-                    }
                 }
             }
         }
@@ -116,21 +110,14 @@ struct TrackingView: View {
     private var saveProgressGroup: some View {
         HStack(spacing: 12) {
             Button("Save Progress") {
-                Task {
+                Task { @MainActor in
                     guard let start = startTime,
                           let selectedGroup else { return }
                     
                     let endTime = isPaused ? (pausedDate ?? Date()) : Date()
                     let elapsed = endTime.timeIntervalSince(start)
                     
-                    var steps = max(0, currentStepCount)
-                    if steps == 0 {
-                        do {
-                            steps = try await healthKitManager.fetchStepCount(from: start, to: endTime)
-                        } catch {
-                            steps = -999
-                        }
-                    }
+                    let steps = max(0, currentStepCount)
                     
                     let session = WalkSession(
                         start: start,
@@ -143,7 +130,6 @@ struct TrackingView: View {
                     isPaused = false
                     pausedDate = nil
                     currentStepCount = 0
-                    lastStepRefresh = nil
                     stopPedometerUpdates()
                     
                 }
@@ -165,7 +151,6 @@ struct TrackingView: View {
                     isPaused = false
                     pausedDate = nil
                     currentStepCount = 0
-                    lastStepRefresh = nil
                     stopPedometerUpdates()
                 }
                 
@@ -180,24 +165,6 @@ struct TrackingView: View {
         let interval: TimeInterval = 5
         let bucket = floor(current.timeIntervalSinceReferenceDate / interval)
         return Date(timeIntervalSinceReferenceDate: bucket * interval)
-    }
-
-    private func refreshLiveStepsIfNeeded(current: Date, startTime: Date) async {
-        guard !isPaused else { return }
-        guard !isPedometerRunning else { return }
-
-        let refreshInterval: TimeInterval = 5
-        if let lastStepRefresh,
-           current.timeIntervalSince(lastStepRefresh) < refreshInterval {
-            return
-        }
-
-        do {
-            currentStepCount = try await healthKitManager.fetchStepCount(from: startTime, to: current)
-            lastStepRefresh = current
-        } catch {
-            // step count unavailable; retain last known value
-        }
     }
 
     private func startPedometerUpdates(from start: Date) {
@@ -242,7 +209,6 @@ struct TrackingView: View {
 
 #Preview("Active tracking"){
     TrackingView(
-        healthKitManager: HealthKitManager(),
         startTime: .constant(Date().addingTimeInterval(-256)),
         isPaused: .constant(false),
         selectedGroup: .constant(WalkGroup(name: "Walks with kids"))
@@ -251,7 +217,6 @@ struct TrackingView: View {
 
 #Preview("Default"){
     TrackingView(
-        healthKitManager: HealthKitManager(),
         startTime: .constant(nil),
         isPaused: .constant(false),
         selectedGroup: .constant(WalkGroup(name: "Training Runs (woods)"))

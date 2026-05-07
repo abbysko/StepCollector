@@ -11,24 +11,10 @@ import SwiftData
 struct ContentView: View {
     @State private var isPaused = false
     @State private var startTime: Date? = nil
-    @State private var healthKitManager = HealthKitManager()
     @State private var selectedGroup: WalkGroup? = nil
     
     var body: some View {
         allTabsView
-            .task {
-                
-#if DEBUG
-                if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-                    return
-                }
-#endif
-                do {
-                    try await healthKitManager.requestAuthorization()
-                } catch {
-                    print("HealthKit auth failed: \(error)")
-                }
-            }
     }
     
     private var allTabsView: some View {
@@ -68,7 +54,6 @@ struct ContentView: View {
             HeaderView(title: "Track Steps")
             Spacer()
             TrackingView(
-                healthKitManager: healthKitManager,
                 startTime: $startTime,
                 isPaused: $isPaused,
                 selectedGroup: $selectedGroup
