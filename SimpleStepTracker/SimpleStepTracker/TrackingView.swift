@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-import Combine
-import SwiftData
+import CoreMotion
 
 struct TrackingView: View {
     let healthKitManager: HealthKitManager
@@ -20,6 +19,8 @@ struct TrackingView: View {
     @State private var pausedDate: Date? = nil
     @State private var currentStepCount = 0
     @State private var lastStepRefresh: Date? = nil
+    @State private var pedometer = CMPedometer()
+    @State private var isPedometerRunning = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -45,13 +46,21 @@ struct TrackingView: View {
             Spacer()
         }
         .padding()
+        .onDisappear {
+            stopPedometerUpdates()
+        }
     }
     
     // view elements
     private var startButton: some View {
         Button("Start Tracking") {
             if startTime == nil {
-                startTime = Date()
+                let startedAt = Date()
+                startTime = startedAt
+                pausedDate = nil
+                currentStepCount = 0
+                lastStepRefresh = nil
+                startPedometerUpdates(from: startedAt)
             }
             isPaused = false
         }
@@ -65,6 +74,7 @@ struct TrackingView: View {
 
             isPaused = true
             pausedDate = Date()
+            stopPedometerUpdates()
         }
         .buttonStyle(.borderedProminent)
         .tint(.red)
@@ -113,11 +123,13 @@ struct TrackingView: View {
                     let endTime = isPaused ? (pausedDate ?? Date()) : Date()
                     let elapsed = endTime.timeIntervalSince(start)
                     
-                    var steps = 0
-                    do {
-                        steps = try await healthKitManager.fetchStepCount(from: start, to: endTime)
-                    } catch {
-                        steps = -999
+                    var steps = max(0, currentStepCount)
+                    if steps == 0 {
+                        do {
+                            steps = try await healthKitManager.fetchStepCount(from: start, to: endTime)
+                        } catch {
+                            steps = -999
+                        }
                     }
                     
                     let session = WalkSession(
@@ -130,6 +142,9 @@ struct TrackingView: View {
                     startTime = nil
                     isPaused = false
                     pausedDate = nil
+                    currentStepCount = 0
+                    lastStepRefresh = nil
+                    stopPedometerUpdates()
                     
                 }
             }
@@ -148,6 +163,10 @@ struct TrackingView: View {
                 Button("Yes, reset", role: .destructive) {
                     startTime = nil
                     isPaused = false
+                    pausedDate = nil
+                    currentStepCount = 0
+                    lastStepRefresh = nil
+                    stopPedometerUpdates()
                 }
                 
                 Button("Cancel", role: .cancel) { }
@@ -165,6 +184,7 @@ struct TrackingView: View {
 
     private func refreshLiveStepsIfNeeded(current: Date, startTime: Date) async {
         guard !isPaused else { return }
+        guard !isPedometerRunning else { return }
 
         let refreshInterval: TimeInterval = 5
         if let lastStepRefresh,
@@ -178,6 +198,30 @@ struct TrackingView: View {
         } catch {
             // step count unavailable; retain last known value
         }
+    }
+
+    private func startPedometerUpdates(from start: Date) {
+        guard CMPedometer.isStepCountingAvailable() else { return }
+
+        isPedometerRunning = true
+        pedometer.startUpdates(from: start) { data, error in
+            DispatchQueue.main.async {
+                if error != nil {
+                    isPedometerRunning = false
+                    return
+                }
+
+                if let steps = data?.numberOfSteps.intValue {
+                    currentStepCount = steps
+                }
+            }
+        }
+    }
+
+    private func stopPedometerUpdates() {
+        guard isPedometerRunning else { return }
+        pedometer.stopUpdates()
+        isPedometerRunning = false
     }
     
     private func metricBlock(title: String, value: String, tint: Color) -> some View {
