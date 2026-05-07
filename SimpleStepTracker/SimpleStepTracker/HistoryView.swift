@@ -27,8 +27,6 @@ struct HistoryView: View {
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
-            Text("Current group: \(selectedGroup?.name ?? "No Group Selected")").frame(maxWidth: .infinity, alignment: .center)
-            
             Picker("Metric", selection: $selectedMetric) {
                 ForEach(Metric.allCases, id: \.self) { metric in
                     Text(metric.rawValue)
@@ -40,7 +38,18 @@ struct HistoryView: View {
             historyContentView
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 1) {
+                    Text("History")
+                        .font(.headline)
+                    Text(selectedGroup?.name ?? "No Group Selected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
     }
     
     @ViewBuilder

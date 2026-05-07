@@ -47,14 +47,12 @@ struct ContentView: View {
                 isPaused: $isPaused,
                 selectedGroup: $selectedGroup
             )
-            .navigationTitle("Track Steps")
         }
     }
     
     private var historyTabView: some View {
         NavigationStack {
             HistoryView(selectedGroup: $selectedGroup)
-                .navigationTitle("History")
         }
     }
 }

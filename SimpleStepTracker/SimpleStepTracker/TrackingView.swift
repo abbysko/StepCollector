@@ -23,8 +23,6 @@ struct TrackingView: View {
     var body: some View {
         VStack(spacing: 24) {
             
-            Text("Current group: \(selectedGroup?.name ?? "No Group Selected")")
-            
             // Start & Stop control buttons
             HStack(spacing: 12) {
                 startButton
@@ -46,6 +44,18 @@ struct TrackingView: View {
         .padding()
         .onDisappear {
             stopPedometerUpdates()
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 1) {
+                    Text("Track Steps")
+                        .font(.headline)
+                    Text(selectedGroup?.name ?? "No Group Selected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
     
