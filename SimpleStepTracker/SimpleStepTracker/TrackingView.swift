@@ -45,18 +45,6 @@ struct TrackingView: View {
         .onDisappear {
             stopPedometerUpdates()
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 1) {
-                    Text("Track Steps")
-                        .font(.headline)
-                    Text(selectedGroup?.name ?? "No Group Selected")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
     }
     
     // view elements

@@ -39,17 +39,6 @@ struct HistoryView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 1) {
-                    Text("History")
-                        .font(.headline)
-                    Text(selectedGroup?.name ?? "No Group Selected")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
     }
     
     @ViewBuilder
@@ -219,3 +208,4 @@ struct HistoryView: View {
     HistoryView(
         selectedGroup: .constant(WalkGroup(name: "Walks with kids")))
 }
+

@@ -32,33 +32,22 @@ struct HomeView: View {
     }
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Your Tracking Groups")
-                Spacer()
-                Button("Add Group") {
-                    groupName = ""
-                    groupError = ""
-                    editorMode = .add
-                }
-                .disabled(groups.count >= 5)
-            }
-            .padding(.horizontal)
-            
-            List(groups) { group in
-                Button {
-                    selectedGroup = group
-                } label: {
-                    HStack {
-                        Text(group.name)
-                        Spacer()
-                        if selectedGroup?.persistentModelID == group.persistentModelID {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
+        List {
+            Section {
+                ForEach(groups) { group in
+                    Button {
+                        selectedGroup = group
+                    } label: {
+                        HStack {
+                            Text(group.name)
+                            Spacer()
+                            if selectedGroup?.persistentModelID == group.persistentModelID {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.tint)
+                            }
                         }
                     }
-                }
-                .swipeActions(edge: .leading) {
+                    .swipeActions(edge: .leading) {
                         Button {
                             groupName = group.name
                             groupError = ""
@@ -68,15 +57,28 @@ struct HomeView: View {
                         }
                         .tint(.blue)
                     }
-                .swipeActions (edge: .trailing) {
-                    Button(role: .destructive) {
-                        if selectedGroup?.persistentModelID == group.persistentModelID {
-                            selectedGroup = groups.first(where: { $0.persistentModelID != group.persistentModelID })
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            if selectedGroup?.persistentModelID == group.persistentModelID {
+                                selectedGroup = groups.first(where: { $0.persistentModelID != group.persistentModelID })
+                            }
+                            modelContext.delete(group)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
-                        modelContext.delete(group)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
                     }
+                }
+            } header: {
+                HStack {
+                    Text("Manage Groups")
+                    Spacer()
+                    Button("Add Group") {
+                        groupName = ""
+                        groupError = ""
+                        editorMode = .add
+                    }
+                    .disabled(groups.count >= 5)
+                    .textCase(nil)
                 }
             }
         }
