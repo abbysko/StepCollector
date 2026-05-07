@@ -70,7 +70,7 @@ struct HomeView: View {
                 }
             } header: {
                 HStack {
-                    Text("Manage Groups")
+                    Text("Select Group")
                     Spacer()
                     Button("Add Group") {
                         groupName = ""
