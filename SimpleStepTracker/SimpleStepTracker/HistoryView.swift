@@ -144,7 +144,7 @@ struct HistoryView: View {
         .padding(.horizontal)
     }
     
-    private var cumulativeTotals: [CumulativeTotals] {
+    private var cumulativeTotals: [HistoryCumulativeTotals] {
         let sortedSessions = sessions.sorted { $0.start < $1.start }
         
         var runningTotalSteps = 0
@@ -153,7 +153,7 @@ struct HistoryView: View {
         return sortedSessions.map { session in
             runningTotalSteps += session.stepCount
             runningTotalDuration += session.duration
-            return CumulativeTotals(
+            return HistoryCumulativeTotals(
                 time: session.start,
                 cumulativeSteps: runningTotalSteps,
                 cumulativeDuration: runningTotalDuration
@@ -161,7 +161,7 @@ struct HistoryView: View {
         }
     }
     
-    private var dailyTotals: [DailyWalkTotal] {
+    private var dailyTotals: [HistoryDailyWalkTotal] {
         let calendar = Calendar.current
         
         let grouped = Dictionary(grouping: sessions) { session in
@@ -170,7 +170,7 @@ struct HistoryView: View {
         
         return grouped
             .map { day, sessionsForDay in
-                DailyWalkTotal(
+                HistoryDailyWalkTotal(
                     day: day,
                     totalDuration: sessionsForDay.reduce(0) { $0 + $1.duration },
                     totalSteps: sessionsForDay.reduce(0) { $0 + $1.stepCount }

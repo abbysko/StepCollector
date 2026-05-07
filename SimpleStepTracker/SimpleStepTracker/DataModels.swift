@@ -34,7 +34,7 @@ final class WalkGroup {
 }
 
 /* Aggregated totals for a single day, used in history charts */
-struct DailyWalkTotal: Identifiable {
+struct HistoryDailyWalkTotal: Identifiable {
     let day: Date
     let totalDuration: TimeInterval
     let totalSteps: Int
@@ -43,7 +43,7 @@ struct DailyWalkTotal: Identifiable {
 }
 
 /* Running cumulative totals across sessions, used in history charts */
-struct CumulativeTotals: Identifiable {
+struct HistoryCumulativeTotals: Identifiable {
     let time: Date
     let cumulativeSteps: Int
     let cumulativeDuration: TimeInterval
