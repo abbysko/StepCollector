@@ -11,7 +11,7 @@ struct HomeView: View {
     @Binding var selectedGroup: WalkGroup?
     
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \WalkGroup.name) private var groups: [WalkGroup]
+    @Query(sort: \WalkGroup.name) private var walkGroups: [WalkGroup]
     
     @State private var editorMode: GroupEditorMode? = nil
     @State private var groupName = ""
@@ -23,10 +23,22 @@ struct HomeView: View {
 
         var id: String {
             switch self {
-            case .add:
-                return "add"
-            case .rename(let group):
-                return "rename-\(group.persistentModelID)"
+            case .add: return "add"
+            case .rename(let group): return "rename-\(group.persistentModelID)"
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .add: return "Add Group"
+            case .rename: return "Rename Group"
+            }
+        }
+
+        var confirmLabel: String {
+            switch self {
+            case .add: return "Add"
+            case .rename: return "Save"
             }
         }
     }
@@ -34,107 +46,100 @@ struct HomeView: View {
     var body: some View {
         List {
             Section {
-                ForEach(groups) { group in
-                    Button {
-                        selectedGroup = group
-                    } label: {
-                        HStack {
-                            Text(group.name)
-                            Spacer()
-                            if selectedGroup?.persistentModelID == group.persistentModelID {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.tint)
-                            }
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            groupName = group.name
-                            groupError = ""
-                            editorMode = .rename(group)
-                        } label: {
-                            Label("Rename", systemImage: "pencil")
-                        }
-                        .tint(.blue)
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            if selectedGroup?.persistentModelID == group.persistentModelID {
-                                selectedGroup = groups.first(where: { $0.persistentModelID != group.persistentModelID })
-                            }
-                            modelContext.delete(group)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
+                ForEach(walkGroups) { group in
+                    displayWalkGroupRow(group)
                 }
             } header: {
-                HStack {
-                    Text("Select Group")
-                    Spacer()
-                    Button("Add Group") {
-                        groupName = ""
-                        groupError = ""
-                        editorMode = .add
-                    }
-                    .disabled(groups.count >= 5)
-                    .textCase(nil)
-                }
+                listHeader
             }
         }
         .task {
-            if groups.isEmpty {
+            if walkGroups.isEmpty {
                 let defaultGroup = WalkGroup(name: "My Walks")
                 modelContext.insert(defaultGroup)
                 selectedGroup = defaultGroup
             } else if selectedGroup == nil {
-                selectedGroup = groups.first
+                selectedGroup = walkGroups.first
             }
         }
         .sheet(item: $editorMode) { mode in
-            NavigationStack {
-                VStack(alignment: .leading, spacing: 16) {
-                    TextField("Group name", text: $groupName)
-                        .textFieldStyle(.roundedBorder)
+            addRenameDialog(for: mode)
+        }
+    }
 
-                    if !groupError.isEmpty {
-                        Text(groupError)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                    }
+    private var listHeader: some View {
+        HStack {
+            Text("Select Group")
+            Spacer()
+            Button("Add Group") {
+                groupName = ""
+                groupError = ""
+                editorMode = .add
+            }
+            .disabled(walkGroups.count >= 5)
+            .textCase(nil)
+        }
+    }
 
-                    Spacer()
-                }
-                .padding()
-                .navigationTitle(modeTitle(mode))
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            editorMode = nil
-                        }
-                    }
-
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button(confirmButtonTitle(mode)) {
-                            saveGroup(mode)
-                        }
-                    }
+    private func displayWalkGroupRow(_ group: WalkGroup) -> some View {
+        Button {
+            selectedGroup = group
+        } label: {
+            HStack {
+                Text(group.name)
+                Spacer()
+                if selectedGroup?.persistentModelID == group.persistentModelID {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.tint)
                 }
             }
         }
-    }
-    
-    private func modeTitle(_ mode: GroupEditorMode) -> String {
-        switch mode {
-        case .add: return "Add Group"
-        case .rename: return "Rename Group"
+        .swipeActions(edge: .leading) {
+            Button {
+                groupName = group.name
+                groupError = ""
+                editorMode = .rename(group)
+            } label: {
+                Label("Rename", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                if selectedGroup?.persistentModelID == group.persistentModelID {
+                    selectedGroup = walkGroups.first(where: { $0.persistentModelID != group.persistentModelID })
+                }
+                modelContext.delete(group)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
         }
     }
 
-    private func confirmButtonTitle(_ mode: GroupEditorMode) -> String {
-        switch mode {
-        case .add: return "Add"
-        case .rename: return "Save"
+    private func addRenameDialog(for mode: GroupEditorMode) -> some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                TextField("Group name", text: $groupName)
+                    .textFieldStyle(.roundedBorder)
+
+                if !groupError.isEmpty {
+                    Text(groupError)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle(mode.title)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { editorMode = nil }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(mode.confirmLabel) { saveGroup(mode) }
+                }
+            }
         }
     }
     
@@ -145,7 +150,7 @@ struct HomeView: View {
             groupError = "Name cannot be empty."
         } else if trimmed.count > 100 {
             groupError = "Name must be 100 characters or fewer."
-        } else if groups.contains(where: {
+        } else if walkGroups.contains(where: {
             switch mode {
             case .add:
                 return $0.name.caseInsensitiveCompare(trimmed) == .orderedSame
@@ -190,7 +195,7 @@ struct HomeView: View {
         .modelContainer(container)
 }
 
-#Preview ("5 saved"){
+#Preview("5 saved") {
     let container = try! ModelContainer(
         for: WalkGroup.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
