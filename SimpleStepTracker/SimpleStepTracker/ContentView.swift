@@ -82,7 +82,7 @@ struct ContentView: View {
     }
 
     private var homeTabView: some View {
-        HomeView(selectedGroup: $selectedGroup)
+        HomeView(selectedGroup: $selectedGroup, isTrackingActive: startTime != nil)
     }
 
     private var trackTabView: some View {

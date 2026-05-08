@@ -9,6 +9,7 @@ import SwiftData
 
 struct HomeView: View {
     @Binding var selectedGroup: WalkGroup?
+    var isTrackingActive: Bool = false
     
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WalkGroup.name) private var walkGroups: [WalkGroup]
@@ -76,7 +77,7 @@ struct HomeView: View {
                 groupError = ""
                 editorMode = .add
             }
-            .disabled(walkGroups.count >= 5)
+            .disabled(walkGroups.count >= 5 || isTrackingActive)
             .textCase(nil)
         }
     }
@@ -94,6 +95,7 @@ struct HomeView: View {
                 }
             }
         }
+        .disabled(isTrackingActive)
         .swipeActions(edge: .leading) {
             Button {
                 groupName = group.name

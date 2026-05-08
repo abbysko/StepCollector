@@ -22,8 +22,6 @@ struct TrackingView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            
-            // Start & Stop control buttons
             HStack(spacing: 12) {
                 startButton
                 stopButton
@@ -32,7 +30,6 @@ struct TrackingView: View {
             
             Spacer()
             
-            // Show live tracking of steps and duration
             liveTrackingDisplay
             
             if isPaused {
@@ -42,12 +39,8 @@ struct TrackingView: View {
             Spacer()
         }
         .padding()
-        .onDisappear {
-            stopPedometerUpdates()
-        }
     }
     
-    // view elements
     private var startButton: some View {
         Button("Start Tracking") {
             if startTime == nil {
@@ -64,7 +57,7 @@ struct TrackingView: View {
         .disabled(startTime != nil)
     }
     
-    private var stopButton: some View{
+    private var stopButton: some View {
         Button("Stop Tracking") {
 
             isPaused = true
@@ -108,29 +101,21 @@ struct TrackingView: View {
     private var saveProgressGroup: some View {
         HStack(spacing: 12) {
             Button("Save Progress") {
-                Task { @MainActor in
-                    guard let start = startTime,
-                          let selectedGroup else { return }
-                    
-                    let endTime = isPaused ? (pausedDate ?? Date()) : Date()
-                    let elapsed = endTime.timeIntervalSince(start)
-                    
-                    let steps = max(0, currentStepCount)
-                    
-                    let session = WalkSession(
-                        start: start,
-                        duration: elapsed,
-                        stepCount: steps
-                    )
-                    selectedGroup.sessions.append(session)
-                    
-                    startTime = nil
-                    isPaused = false
-                    pausedDate = nil
-                    currentStepCount = 0
-                    stopPedometerUpdates()
-                    
-                }
+                guard let start = startTime,
+                      let selectedGroup else { return }
+                
+                let endTime = isPaused ? (pausedDate ?? Date()) : Date()
+                let elapsed = endTime.timeIntervalSince(start)
+                let steps = max(0, currentStepCount)
+                
+                let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
+                selectedGroup.sessions.append(session)
+                
+                startTime = nil
+                isPaused = false
+                pausedDate = nil
+                currentStepCount = 0
+                stopPedometerUpdates()
             }
             .buttonStyle(.borderedProminent)
             
@@ -159,12 +144,6 @@ struct TrackingView: View {
         }
     }
     
-    private func stepRefreshTriggerDate(for current: Date) -> Date {
-        let interval: TimeInterval = 5
-        let bucket = floor(current.timeIntervalSinceReferenceDate / interval)
-        return Date(timeIntervalSinceReferenceDate: bucket * interval)
-    }
-
     private func startPedometerUpdates(from start: Date) {
         guard CMPedometer.isStepCountingAvailable() else { return }
 
