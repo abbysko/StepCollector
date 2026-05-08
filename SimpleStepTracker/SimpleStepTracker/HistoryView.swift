@@ -10,7 +10,7 @@ import Charts
 import SwiftData
 
 struct HistoryView: View {
-    @State private var selectedMetric: Metric = .steps
+    @State private var displayType: DisplayOption = .steps
     
     @Binding var selectedGroup: WalkGroup?
     
@@ -18,18 +18,18 @@ struct HistoryView: View {
         (selectedGroup?.sessions ?? []).sorted { $0.start < $1.start }
     }
     
-    enum Metric: String, CaseIterable {
+    enum DisplayOption: String, CaseIterable {
         case steps = "Steps"
         case duration = "Duration"
-        case allSessions = "List"
+        case list = "List"
     }
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
-            Picker("Metric", selection: $selectedMetric) {
-                ForEach(Metric.allCases, id: \.self) { metric in
-                    Text(metric.rawValue)
+            Picker("DisplayOption", selection: $displayType) {
+                ForEach(DisplayOption.allCases, id: \.self) { option in
+                    Text(option.rawValue)
                 }
             }
             .pickerStyle(.segmented)
@@ -38,7 +38,6 @@ struct HistoryView: View {
             historyContentView
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .navigationBarTitleDisplayMode(.inline)
     }
     
     @ViewBuilder
@@ -48,30 +47,25 @@ struct HistoryView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        } else if selectedMetric == .allSessions {
-            sessionsSection
+        } else if displayType == .list {
+            listView
         } else {
-            plotsSection
+            plotsView
         }
     }
     
-    
-    private var plotsSection: some View{
+    private var plotsView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                
-                // Cumulative sum plot
-                let cumulativePlotTitle = selectedMetric == .duration ? "Cumulative duration (min)" : "Cumulative steps"
-                Text(cumulativePlotTitle)
+                let cumulativeTitle = displayType == .duration ? "Cumulative duration (min)" : "Cumulative steps"
+                Text(cumulativeTitle)
                     .font(.headline)
                     .foregroundStyle(.primary)
                     .padding(.horizontal)
                 cumulativePlot
-                
-                // Daily Totals Plot
-                let plotTitle = selectedMetric == .duration ? "Duration by day" : "Steps by day"
-                Text(plotTitle)
+
+                let dailyTitle = displayType == .duration ? "Duration by day (min)" : "Steps by day"
+                Text(dailyTitle)
                     .font(.headline)
                     .foregroundStyle(.primary)
                     .padding(.horizontal)
@@ -80,47 +74,31 @@ struct HistoryView: View {
         }
     }
     
-    private var sessionsSection: some View{
-        VStack(alignment: .leading, spacing: 12) {
-            List(sessions.reversed()) { session in
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(session.start.formatted(date: .abbreviated, time: .shortened))")
-                    
-                    Text("\(String(session.stepCount)) steps; \(session.duration.durationFormatted)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+    private var listView: some View {
+        List(sessions.reversed()) { session in
+            VStack(alignment: .leading, spacing: 4) {
+                Text(session.start.formatted(date: .abbreviated, time: .shortened))
+
+                Text("\(session.stepCount) steps; \(session.duration.durationFormatted)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .listStyle(.plain)
         }
+        .listStyle(.plain)
     }
     
-    private var cumulativePlot: some View{
+    private var cumulativePlot: some View {
         Chart(cumulativeTotals) { point in
-            LineMark(
-                x: .value("Time", point.time),
-                y: .value(
-                    selectedMetric == .duration ? "Cumulative Minutes" : "Cumulative Steps",
-                    selectedMetric == .duration
-                    ? point.cumulativeDuration / 60
-                    : Double(point.cumulativeSteps)
-                )
-            )
-            
-            PointMark(
-                x: .value("Time", point.time),
-                y: .value(
-                    selectedMetric == .duration ? "Cumulative Minutes" : "Cumulative Steps",
-                    selectedMetric == .duration
-                    ? point.cumulativeDuration / 60
-                    : Double(point.cumulativeSteps)
-                )
-            )
+            let yLabel = displayType == .duration ? "Cumulative Minutes" : "Cumulative Steps"
+            let yValue = displayType == .duration ? point.cumulativeDuration / 60 : Double(point.cumulativeSteps)
+
+            LineMark(x: .value("Time", point.time), y: .value(yLabel, yValue))
+            PointMark(x: .value("Time", point.time), y: .value(yLabel, yValue))
         }
         .frame(height: 220)
         .padding(.horizontal)
         .chartXAxis {
-            AxisMarks(values: .automatic) { value in
+            AxisMarks(values: .automatic) { _ in
                 AxisValueLabel(format: .dateTime.month().day())
             }
         }
@@ -131,8 +109,8 @@ struct HistoryView: View {
             BarMark(
                 x: .value("Day", item.day, unit: .day),
                 y: .value(
-                    selectedMetric == .duration ? "Minutes" : "Steps",
-                    selectedMetric == .duration
+                    displayType == .duration ? "Minutes" : "Steps",
+                    displayType == .duration
                     ? item.totalDuration / 60
                     :  Double(item.totalSteps)
                 )
@@ -143,18 +121,16 @@ struct HistoryView: View {
     }
     
     private var cumulativeTotals: [HistoryCumulativeTotals] {
-        let sortedSessions = sessions.sorted { $0.start < $1.start }
-        
-        var runningTotalSteps = 0
-        var runningTotalDuration: TimeInterval = 0
-        
-        return sortedSessions.map { session in
-            runningTotalSteps += session.stepCount
-            runningTotalDuration += session.duration
+        var runningSteps = 0
+        var runningDuration: TimeInterval = 0
+
+        return sessions.map { session in
+            runningSteps += session.stepCount
+            runningDuration += session.duration
             return HistoryCumulativeTotals(
                 time: session.start,
-                cumulativeSteps: runningTotalSteps,
-                cumulativeDuration: runningTotalDuration
+                cumulativeSteps: runningSteps,
+                cumulativeDuration: runningDuration
             )
         }
     }
