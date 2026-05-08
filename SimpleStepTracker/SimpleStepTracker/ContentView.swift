@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
     @State private var isPaused = false
@@ -83,28 +82,19 @@ struct ContentView: View {
     }
 
     private var homeTabView: some View {
-        NavigationStack {
-            HomeView(selectedGroup: $selectedGroup)
-                .toolbar(.hidden, for: .navigationBar)
-        }
+        HomeView(selectedGroup: $selectedGroup)
     }
 
     private var trackTabView: some View {
-        NavigationStack {
-            TrackingView(
-                startTime: $startTime,
-                isPaused: $isPaused,
-                selectedGroup: $selectedGroup
-            )
-            .toolbar(.hidden, for: .navigationBar)
-        }
+        TrackingView(
+            startTime: $startTime,
+            isPaused: $isPaused,
+            selectedGroup: $selectedGroup
+        )
     }
 
     private var historyTabView: some View {
-        NavigationStack {
-            HistoryView(selectedGroup: $selectedGroup)
-                .toolbar(.hidden, for: .navigationBar)
-        }
+        HistoryView(selectedGroup: $selectedGroup)
     }
 }
 
