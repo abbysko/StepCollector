@@ -29,3 +29,8 @@ The app has three tabs:
 - iOS 17+
 - Motion & Fitness permission for live pedometer updates
 - Xcode 16+
+
+## Website & Privacy Policy
+
+- GitHub Pages site: https://abbysko.github.io/SimpleStepTracker/
+- Privacy policy: https://abbysko.github.io/SimpleStepTracker/#privacy
