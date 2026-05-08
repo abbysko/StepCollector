@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreMotion
+import UserNotifications
 
 struct TrackingView: View {
     
@@ -17,8 +18,13 @@ struct TrackingView: View {
     @State private var showingClearConfirmation = false
     @State private var pausedDate: Date? = nil
     @State private var currentStepCount = 0
+    @State private var trackingIssueMessage: String? = nil
     @State private var pedometer = CMPedometer()
     @State private var isPedometerRunning = false
+    @State private var hasNotifiedLongSession = false
+
+    private let zeroStepTimeoutThreshold: TimeInterval = 180
+    private let longSessionThreshold: TimeInterval = 3600
     
     var body: some View {
         VStack(spacing: 24) {
@@ -39,6 +45,15 @@ struct TrackingView: View {
             Spacer()
         }
         .padding()
+        .onReceive(Timer.publish(every: 30, on: .main, in: .common).autoconnect()) { _ in
+            if let startTime {
+                let elapsed = (isPaused ? (pausedDate ?? Date()) : Date()).timeIntervalSince(startTime)
+                if elapsed >= longSessionThreshold && !hasNotifiedLongSession {
+                    hasNotifiedLongSession = true
+                    scheduleSessionReminder()
+                }
+            }
+        }
     }
     
     private var startButton: some View {
@@ -46,8 +61,7 @@ struct TrackingView: View {
             if startTime == nil {
                 let startedAt = Date()
                 startTime = startedAt
-                pausedDate = nil
-                currentStepCount = 0
+                initializeSessionState()
                 startPedometerUpdates(from: startedAt)
             }
             isPaused = false
@@ -77,6 +91,7 @@ struct TrackingView: View {
 
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     let current = isPaused ? (pausedDate ?? context.date) : context.date
+                    let notice = trackingNotice(for: current)
 
                     VStack(spacing: 28) {
                         metricBlock(
@@ -90,6 +105,10 @@ struct TrackingView: View {
                             value: "\(currentStepCount)",
                             tint: .cyan
                         )
+
+                        if let notice {
+                            noticeBanner(notice)
+                        }
                     }
                     .padding(.top, 8)
                 }
@@ -110,11 +129,8 @@ struct TrackingView: View {
                 let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
                 selectedGroup.sessions.append(session)
                 
-                startTime = nil
-                isPaused = false
-                pausedDate = nil
-                currentStepCount = 0
-                stopPedometerUpdates()
+                cancelSessionReminder()
+                resetSession()
             }
             .buttonStyle(.borderedProminent)
             
@@ -129,11 +145,7 @@ struct TrackingView: View {
                 titleVisibility: .visible
             ) {
                 Button("Yes, reset", role: .destructive) {
-                    startTime = nil
-                    isPaused = false
-                    pausedDate = nil
-                    currentStepCount = 0
-                    stopPedometerUpdates()
+                    resetSession()
                 }
                 
                 Button("Cancel", role: .cancel) { }
@@ -144,13 +156,17 @@ struct TrackingView: View {
     }
     
     private func startPedometerUpdates(from start: Date) {
-        guard CMPedometer.isStepCountingAvailable() else { return }
+        guard CMPedometer.isStepCountingAvailable() else {
+            trackingIssueMessage = "Step counting isn't available on this device."
+            return
+        }
 
         isPedometerRunning = true
         pedometer.startUpdates(from: start) { data, error in
             DispatchQueue.main.async {
                 if error != nil {
                     isPedometerRunning = false
+                    trackingIssueMessage = "Unable to read step data from the pedometer. Check Motion & Fitness permissions in Settings."
                     return
                 }
 
@@ -165,6 +181,80 @@ struct TrackingView: View {
         guard isPedometerRunning else { return }
         pedometer.stopUpdates()
         isPedometerRunning = false
+    }
+
+    private func resetSession() {
+        startTime = nil
+        isPaused = false
+        initializeSessionState()
+        cancelSessionReminder()
+        stopPedometerUpdates()
+    }
+
+    private func initializeSessionState() {
+        pausedDate = nil
+        currentStepCount = 0
+        trackingIssueMessage = nil
+        hasNotifiedLongSession = false
+    }
+
+    private func scheduleSessionReminder() {
+        let content = UNMutableNotificationContent()
+        content.title = "Still tracking?"
+        content.body = "Your walk session has been running for over an hour. Save or reset it when you're done."
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3600, repeats: true)
+        let request = UNNotificationRequest(identifier: "longSessionReminder", content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    private func cancelSessionReminder() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["longSessionReminder"])
+    }
+
+    private func trackingNotice(for current: Date) -> TrackingNotice? {
+        if let trackingIssueMessage {
+            return TrackingNotice(
+                systemImage: "exclamationmark.triangle.fill",
+                message: trackingIssueMessage,
+                tint: .orange
+            )
+        }
+
+        guard let startTime, !isPaused else { return nil }
+
+        let elapsed = current.timeIntervalSince(startTime)
+        guard currentStepCount == 0, elapsed >= zeroStepTimeoutThreshold else { return nil }
+
+        return TrackingNotice(
+            systemImage: "figure.walk.motion",
+            message: "No steps have been detected yet. If you're walking, keep your iPhone on you and make sure Motion & Fitness is enabled.",
+            tint: .orange
+        )
+    }
+
+    private func noticeBanner(_ notice: TrackingNotice) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: notice.systemImage)
+                .foregroundStyle(notice.tint)
+                .font(.headline)
+
+            Text(notice.message)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(notice.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(notice.tint.opacity(0.22), lineWidth: 1)
+        )
     }
     
     private func metricBlock(title: String, value: String, tint: Color) -> some View {
@@ -181,6 +271,12 @@ struct TrackingView: View {
                 .minimumScaleFactor(0.7)
         }
     }
+
+    private struct TrackingNotice {
+        let systemImage: String
+        let message: String
+        let tint: Color
+    }
 }
 
 #Preview("Default"){
@@ -196,6 +292,14 @@ struct TrackingView: View {
         startTime: .constant(Date().addingTimeInterval(-256)),
         isPaused: .constant(false),
         selectedGroup: .constant(WalkGroup(name: "Walks with kids"))
+    )
+}
+
+#Preview("No steps detected (warning)"){
+    TrackingView(
+        startTime: .constant(Date().addingTimeInterval(-240)),
+        isPaused: .constant(false),
+        selectedGroup: .constant(WalkGroup(name: "Morning Walk"))
     )
 }
 
