@@ -12,31 +12,6 @@ The app has three tabs:
   - **Duration** — Cumulative duration line chart + daily duration bar chart
   - **List** — Scrollable list of all sessions with date, steps, and duration
 
-## Screenshots
-
-<table>
-  <tr>
-    <td align="center"><strong>Home</strong></td>
-    <td align="center"><strong>Track (In Progress)</strong></td>
-    <td align="center"><strong>Track (Save or Reset)</strong></td>
-  </tr>
-  <tr>
-    <td><img src="Screenshots/HomeTab.png" alt="Home tab" width="260"></td>
-    <td><img src="Screenshots/TrackingTab_inProgress.png" alt="Track tab in progress" width="260"></td>
-    <td><img src="Screenshots/TrackingTab_saveOrReset.png" alt="Track tab save or reset" width="260"></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>History (List)</strong></td>
-    <td align="center"><strong>History (Charts)</strong></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><img src="Screenshots/HistoryTab_list.png" alt="History tab list view" width="260"></td>
-    <td><img src="Screenshots/HistoryTab_plots.png" alt="History tab charts view" width="260"></td>
-    <td></td>
-  </tr>
-</table>
-
 ## Architecture
 
 | File | Responsibility |
