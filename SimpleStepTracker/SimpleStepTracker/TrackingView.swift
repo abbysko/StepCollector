@@ -59,7 +59,6 @@ struct TrackingView: View {
     
     private var stopButton: some View {
         Button("Stop Tracking") {
-
             isPaused = true
             pausedDate = Date()
             stopPedometerUpdates()
@@ -184,6 +183,14 @@ struct TrackingView: View {
     }
 }
 
+#Preview("Default"){
+    TrackingView(
+        startTime: .constant(nil),
+        isPaused: .constant(false),
+        selectedGroup: .constant(WalkGroup(name: "Training Runs (woods)"))
+    )
+}
+
 #Preview("Active tracking"){
     TrackingView(
         startTime: .constant(Date().addingTimeInterval(-256)),
@@ -192,10 +199,3 @@ struct TrackingView: View {
     )
 }
 
-#Preview("Default"){
-    TrackingView(
-        startTime: .constant(nil),
-        isPaused: .constant(false),
-        selectedGroup: .constant(WalkGroup(name: "Training Runs (woods)"))
-    )
-}
