@@ -1,11 +1,11 @@
 # SimpleStepTracker
 
-A SwiftUI iOS app for tracking walks with live step updates. Built with SwiftData for local persistence.
+SimpleStepTracker lets you log and review your walks across named groups — great for separating different walking contexts like commutes, hikes, or exercise. Track live step counts and elapsed time during a session, then browse cumulative and daily charts of your history. Built with SwiftUI and SwiftData for a simple fully local, no-account experience.
 
 ## Features
 
 - **Home** — Manage up to 5 named walk groups (e.g. "Morning Walks", "Hikes"). Groups can be created, renamed, and deleted. A default "My Walks" group is created on first launch.
-- **Track** — Start, pause, save, or reset a walk session. Shows a live step count and elapsed time during an active session.
+- **Track** — Start a walk session, stop when done, then save or reset. Shows a live step count and elapsed time during an active session.
 - **History** — View saved sessions for the active group with three display modes:
   - **Steps** — Cumulative step line chart + daily steps bar chart
   - **Duration** — Cumulative duration line chart + daily duration bar chart
@@ -27,4 +27,4 @@ A SwiftUI iOS app for tracking walks with live step updates. Built with SwiftDat
 
 - iOS 17+
 - Motion & Fitness permission for live pedometer updates
-- Xcode 15+
+- Xcode 16+
