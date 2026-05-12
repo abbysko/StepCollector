@@ -135,7 +135,7 @@ struct HistoryView: View {
                 x: .value("Day", item.day, unit: .day),
                 y: .value(yLabel, yValue)
             )
-            .foregroundStyle(isSelected ? .blue : .blue.opacity(0.35))
+            .foregroundStyle(isSelected ? .blue : .blue.opacity(0.55))
         }
         .chartOverlay { chartProxy in
             GeometryReader { geometry in
@@ -259,19 +259,34 @@ struct HistoryView: View {
     let group = WalkGroup(name: "Walks with kids")
     group.sessions = [
         WalkSession(
-            start: Date().addingTimeInterval(-203600),
+            start: Date().addingTimeInterval(-1*60*60*24*1),
             duration: 1200,
             stepCount: 200
         ),
         WalkSession(
-            start: Date().addingTimeInterval(-100600),
+            start: Date().addingTimeInterval(-1*60*60*24*2),
             duration: 4500,
             stepCount: 100
         ),
         WalkSession(
-            start: Date().addingTimeInterval(-300600),
+            start: Date().addingTimeInterval(-1*60*60*24*3),
             duration: 800,
             stepCount: 300
+        ),
+        WalkSession(
+            start: Date().addingTimeInterval(-1*60*60*24*4),
+            duration: 1200,
+            stepCount: 200
+        ),
+        WalkSession(
+            start: Date().addingTimeInterval(-1*60*60*24*6),
+            duration: 3000,
+            stepCount: 350
+        ),
+        WalkSession(
+            start: Date().addingTimeInterval(-1*60*60*24*8),
+            duration: 1200,
+            stepCount: 400
         )
     ]
     
