@@ -11,6 +11,7 @@ import SwiftData
 
 struct HistoryView: View {
     @State private var displayType: DisplayOption = .steps
+    @State private var selectedChartDay: Date?
     @Environment(\.modelContext) private var modelContext
     
     @Binding var selectedGroup: WalkGroup?
@@ -123,19 +124,64 @@ struct HistoryView: View {
     }
     
     private var totalPlot: some View{
-        Chart(dailyTotals) { item in
-            BarMark(
-                x: .value("Day", item.day, unit: .day),
-                y: .value(
-                    displayType == .duration ? "Minutes" : "Steps",
-                    displayType == .duration
-                    ? item.totalDuration / 60
-                    :  Double(item.totalSteps)
+        VStack(alignment: .leading, spacing: 10) {
+            Chart(dailyTotals) { item in
+                BarMark(
+                    x: .value("Day", item.day, unit: .day),
+                    y: .value(
+                        displayType == .duration ? "Minutes" : "Steps",
+                        displayType == .duration
+                        ? item.totalDuration / 60
+                        :  Double(item.totalSteps)
+                    )
                 )
-            )
+
+                if let selectedDailyTotal {
+                    RuleMark(x: .value("Selected Day", selectedDailyTotal.day, unit: .day))
+                        .foregroundStyle(.secondary.opacity(0.35))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                }
+            }
+            .chartXSelection(value: $selectedChartDay)
+
+            if let selectedDailyTotal {
+                HStack(spacing: 8) {
+                    Text(selectedDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
+                        .font(.footnote.weight(.semibold))
+
+                    Text("•")
+                        .foregroundStyle(.secondary)
+
+                    Text(selectedDailyValueText(for: selectedDailyTotal))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 2)
+            } else {
+                Text("Tap a bar for details")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 2)
+            }
         }
         .frame(height: 220)
         .padding(.horizontal)
+    }
+
+    private var selectedDailyTotal: HistoryDailyWalkTotal? {
+        guard let selectedChartDay else { return nil }
+        return dailyTotals.min {
+            abs($0.day.timeIntervalSince(selectedChartDay)) < abs($1.day.timeIntervalSince(selectedChartDay))
+        }
+    }
+
+    private func selectedDailyValueText(for total: HistoryDailyWalkTotal) -> String {
+        if displayType == .duration {
+            let minutes = Int((total.totalDuration / 60).rounded())
+            return "\(minutes) min"
+        }
+
+        return "\(total.totalSteps) steps"
     }
     
     private var cumulativeTotals: [HistoryCumulativeTotals] {
