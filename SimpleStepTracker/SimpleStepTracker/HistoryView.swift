@@ -12,6 +12,8 @@ import SwiftData
 struct HistoryView: View {
     @State private var displayType: DisplayOption = .steps
     @State private var selectedChartDay: Date?
+    @State private var visibleDaySpan: Double?
+    @State private var gestureStartDaySpan: Double?
     @Environment(\.modelContext) private var modelContext
     
     @Binding var selectedGroup: WalkGroup?
@@ -29,7 +31,7 @@ struct HistoryView: View {
         case duration = "Duration"
         case list = "List"
     }
-    
+
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
@@ -64,10 +66,22 @@ struct HistoryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 let cumulativeTitle = displayType == .duration ? "Cumulative duration (min)" : "Cumulative steps"
-                Text(cumulativeTitle)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal)
+                HStack {
+                    Text(cumulativeTitle)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    
+                    Spacer()
+                    
+                    if isZoomedIn {
+                        Button("Reset Zoom") {
+                            resetZoom()
+                        }
+                        .font(.footnote.weight(.semibold))
+                    }
+                }
+                .padding(.horizontal)
+                
                 cumulativePlot
 
                 let dailyTitle = displayType == .duration ? "Duration by day (min)" : "Steps by day"
@@ -107,13 +121,14 @@ struct HistoryView: View {
     }
     
     private var cumulativePlot: some View {
-        Chart(cumulativeTotals) { point in
+        Chart(displayedCumulativeTotals) { point in
             let yLabel = displayType == .duration ? "Cumulative Minutes" : "Cumulative Steps"
             let yValue = displayType == .duration ? point.cumulativeDuration / 60 : Double(point.cumulativeSteps)
 
             LineMark(x: .value("Time", point.time), y: .value(yLabel, yValue))
             PointMark(x: .value("Time", point.time), y: .value(yLabel, yValue))
         }
+        .chartXScale(domain: visibleDateDomain)
         .frame(height: 220)
         .padding(.horizontal)
         .chartXAxis {
@@ -121,10 +136,11 @@ struct HistoryView: View {
                 AxisValueLabel(format: .dateTime.month().day())
             }
         }
+        .simultaneousGesture(zoomGesture)
     }
     
     private var totalPlot: some View{
-        Chart(dailyTotals) { item in
+        Chart(displayedDailyTotals) { item in
             let yLabel = displayType == .duration ? "Minutes" : "Steps"
             let yValue = displayType == .duration
                 ? item.totalDuration / 60
@@ -138,6 +154,7 @@ struct HistoryView: View {
             )
             .foregroundStyle(hasSelection ? (isSelected ? .blue : .blue.opacity(0.55)) : .blue)
         }
+        .chartXScale(domain: visibleDateDomain)
         .chartOverlay { chartProxy in
             GeometryReader { geometry in
                 Rectangle()
@@ -174,7 +191,7 @@ struct HistoryView: View {
                     .allowsHitTesting(false)
                 } else {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Daily average (\(dailyTotals.count) days)")
+                        Text("Daily average (\(displayedDailyTotals.count) days)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -193,11 +210,43 @@ struct HistoryView: View {
         }
         .frame(height: 220)
         .padding(.horizontal)
+        .simultaneousGesture(zoomGesture)
+    }
+
+    private var zoomGesture: some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                let fullSpan = fullDaySpan
+                let baseline = gestureStartDaySpan ?? visibleDaySpan ?? fullSpan
+                if gestureStartDaySpan == nil {
+                    gestureStartDaySpan = baseline
+                }
+
+                let proposed = baseline / value.magnification
+                visibleDaySpan = min(max(proposed, 3), fullSpan)
+            }
+            .onEnded { _ in
+                gestureStartDaySpan = nil
+                guard let visibleDaySpan else { return }
+
+                if visibleDaySpan >= fullDaySpan - 0.5 {
+                    self.visibleDaySpan = nil
+                }
+            }
+    }
+
+    private var isZoomedIn: Bool {
+        visibleDaySpan != nil
+    }
+
+    private func resetZoom() {
+        visibleDaySpan = nil
+        gestureStartDaySpan = nil
     }
 
     private var selectedDailyTotal: HistoryDailyWalkTotal? {
         guard let selectedChartDay else { return nil }
-        return dailyTotals.min {
+        return displayedDailyTotals.min {
             abs($0.day.timeIntervalSince(selectedChartDay)) < abs($1.day.timeIntervalSince(selectedChartDay))
         }
     }
@@ -212,16 +261,16 @@ struct HistoryView: View {
     }
 
     private var averageDailyValueText: String {
-        guard !dailyTotals.isEmpty else {
+        guard !displayedDailyTotals.isEmpty else {
             return displayType == .duration ? "0 min" : "0 steps"
         }
 
         if displayType == .duration {
-            let averageMinutes = dailyTotals.reduce(0) { $0 + ($1.totalDuration / 60) } / Double(dailyTotals.count)
+            let averageMinutes = displayedDailyTotals.reduce(0) { $0 + ($1.totalDuration / 60) } / Double(displayedDailyTotals.count)
             return "\(Int(averageMinutes.rounded())) min"
         }
 
-        let averageSteps = Double(dailyTotals.reduce(0) { $0 + $1.totalSteps }) / Double(dailyTotals.count)
+        let averageSteps = Double(displayedDailyTotals.reduce(0) { $0 + $1.totalSteps }) / Double(displayedDailyTotals.count)
         return "\(Int(averageSteps.rounded())) steps"
     }
 
@@ -261,7 +310,7 @@ struct HistoryView: View {
 
         guard xPosition >= 0, xPosition <= chartProxy.plotSize.width else { return nil }
 
-        return dailyTotals.min { lhs, rhs in
+        return displayedDailyTotals.min { lhs, rhs in
             let lhsX = chartProxy.position(forX: dayCenter(for: lhs.day)) ?? .greatestFiniteMagnitude
             let rhsX = chartProxy.position(forX: dayCenter(for: rhs.day)) ?? .greatestFiniteMagnitude
             return abs(lhsX - xPosition) < abs(rhsX - xPosition)
@@ -285,6 +334,41 @@ struct HistoryView: View {
                 cumulativeDuration: runningDuration
             )
         }
+    }
+
+    private var fullDateDomain: ClosedRange<Date> {
+        guard let first = sessions.first?.start,
+              let last = sessions.last?.start else {
+            let now = Date()
+            return now...now
+        }
+
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: first)
+        let lastDay = calendar.startOfDay(for: last)
+        let inclusiveEnd = calendar.date(byAdding: .day, value: 1, to: lastDay)?.addingTimeInterval(-1) ?? last
+        return start...inclusiveEnd
+    }
+
+    private var fullDaySpan: Double {
+        max(1, fullDateDomain.upperBound.timeIntervalSince(fullDateDomain.lowerBound) / 86_400)
+    }
+
+    private var visibleDateDomain: ClosedRange<Date> {
+        guard let visibleDaySpan else { return fullDateDomain }
+
+        let duration = visibleDaySpan * 86_400
+        let startCandidate = fullDateDomain.upperBound.addingTimeInterval(-duration)
+        let boundedStart = max(startCandidate, fullDateDomain.lowerBound)
+        return boundedStart...fullDateDomain.upperBound
+    }
+
+    private var displayedCumulativeTotals: [HistoryCumulativeTotals] {
+        cumulativeTotals.filter { visibleDateDomain.contains($0.time) }
+    }
+
+    private var displayedDailyTotals: [HistoryDailyWalkTotal] {
+        dailyTotals.filter { visibleDateDomain.contains($0.day) }
     }
     
     private var dailyTotals: [HistoryDailyWalkTotal] {
@@ -342,6 +426,23 @@ struct HistoryView: View {
         )
     ]
     
+    return HistoryView(
+        selectedGroup: .constant(group)
+    )
+}
+
+#Preview("Lots of sessions") {
+    let group = WalkGroup(name: "Daily Walks")
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+
+    group.sessions = stride(from: 0, through: 58, by: 1).map { dayOffset in
+        let start = calendar.date(byAdding: .day, value: -dayOffset, to: today) ?? today
+        let duration = TimeInterval(900 + ((dayOffset * 73) % 2400))
+        let stepCount = 1800 + ((dayOffset * 131) % 5200)
+        return WalkSession(start: start, duration: duration, stepCount: stepCount)
+    }
+
     return HistoryView(
         selectedGroup: .constant(group)
     )
