@@ -125,40 +125,53 @@ struct HistoryView: View {
     
     private var totalPlot: some View{
         Chart(dailyTotals) { item in
+            let yLabel = displayType == .duration ? "Minutes" : "Steps"
+            let yValue = displayType == .duration
+                ? item.totalDuration / 60
+                : Double(item.totalSteps)
+            let isSelected = activeDailyTotal?.day == item.day
+
             BarMark(
                 x: .value("Day", item.day, unit: .day),
-                y: .value(
-                    displayType == .duration ? "Minutes" : "Steps",
-                    displayType == .duration
-                    ? item.totalDuration / 60
-                    :  Double(item.totalSteps)
-                )
+                y: .value(yLabel, yValue)
             )
-
-            if let activeDailyTotal {
-                RuleMark(x: .value("Selected Day", activeDailyTotal.day, unit: .day))
-                    .foregroundStyle(.secondary.opacity(0.35))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-            }
+            .foregroundStyle(isSelected ? .blue : .blue.opacity(0.35))
         }
-        .chartXSelection(value: $selectedChartDay)
-        .chartOverlay { _ in
-            if let activeDailyTotal {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(selectedDailyValueText(for: activeDailyTotal))
-                        .font(.headline)
+        .chartOverlay { chartProxy in
+            GeometryReader { geometry in
+                Rectangle()
+                    .fill(.clear)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        SpatialTapGesture()
+                            .onEnded { value in
+                                selectDailyTotal(at: value.location, chartProxy: chartProxy, geometry: geometry)
+                            }
+                    )
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                selectDailyTotal(at: value.location, chartProxy: chartProxy, geometry: geometry)
+                            }
+                    )
 
-                    Text(activeDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                if let activeDailyTotal {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(activeDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text(selectedDailyValueText(for: activeDailyTotal))
+                            .font(.headline)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.top, 8)
+                    .padding(.leading, 8)
+                    .allowsHitTesting(false)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .padding(.top, 8)
-                .padding(.leading, 8)
-                .allowsHitTesting(false)
             }
         }
         .onAppear {
@@ -188,6 +201,23 @@ struct HistoryView: View {
         }
 
         return "\(total.totalSteps) steps"
+    }
+
+    private func selectDailyTotal(
+        at location: CGPoint,
+        chartProxy: ChartProxy,
+        geometry: GeometryProxy
+    ) {
+        guard let plotFrame = chartProxy.plotFrame else { return }
+        let plotAreaFrame = geometry[plotFrame]
+        let xPosition = location.x - plotAreaFrame.origin.x
+
+        guard xPosition >= 0, xPosition <= chartProxy.plotSize.width else { return }
+        guard let selectedDate: Date = chartProxy.value(atX: xPosition) else { return }
+
+        selectedChartDay = dailyTotals.min {
+            abs($0.day.timeIntervalSince(selectedDate)) < abs($1.day.timeIntervalSince(selectedDate))
+        }?.day
     }
     
     private var cumulativeTotals: [HistoryCumulativeTotals] {
