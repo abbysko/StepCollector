@@ -21,7 +21,7 @@ struct SimpleStepTrackerApp: App {
                 }
                 .alert("Enable Notifications?", isPresented: $showNotificationExplanation) {
                     Button("Allow", action: requestNotificationPermission)
-                    Button("Not Now", role: .cancel)
+                    Button("Not Now", role: .cancel) { }
                 } message: {
                     Text("The only notification we'll send you is a reminder if you are tracking steps in the background for over an hour — nothing else.")
                 }
