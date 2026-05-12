@@ -11,11 +11,16 @@ import SwiftData
 
 struct HistoryView: View {
     @State private var displayType: DisplayOption = .steps
+    @Environment(\.modelContext) private var modelContext
     
     @Binding var selectedGroup: WalkGroup?
     
     private var sessions: [WalkSession] {
         (selectedGroup?.sessions ?? []).sorted { $0.start < $1.start }
+    }
+
+    private var reversedSessions: [WalkSession] {
+        Array(sessions.reversed())
     }
     
     enum DisplayOption: String, CaseIterable {
@@ -75,16 +80,29 @@ struct HistoryView: View {
     }
     
     private var listView: some View {
-        List(sessions.reversed()) { session in
-            VStack(alignment: .leading, spacing: 4) {
-                Text(session.start.formatted(date: .abbreviated, time: .shortened))
+        List {
+            ForEach(reversedSessions) { session in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.start.formatted(date: .abbreviated, time: .shortened))
 
-                Text("\(session.stepCount) steps; \(session.duration.durationFormatted)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    Text("\(session.stepCount) steps; \(session.duration.durationFormatted)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
+            .onDelete(perform: deleteSessions)
         }
         .listStyle(.plain)
+    }
+
+    private func deleteSessions(at offsets: IndexSet) {
+        guard let selectedGroup else { return }
+
+        let sessionsToDelete = offsets.map { reversedSessions[$0] }
+        for session in sessionsToDelete {
+            selectedGroup.sessions.removeAll { $0 === session }
+            modelContext.delete(session)
+        }
     }
     
     private var cumulativePlot: some View {
