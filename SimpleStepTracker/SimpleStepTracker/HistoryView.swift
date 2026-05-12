@@ -124,44 +124,46 @@ struct HistoryView: View {
     }
     
     private var totalPlot: some View{
-        VStack(alignment: .leading, spacing: 10) {
-            Chart(dailyTotals) { item in
-                BarMark(
-                    x: .value("Day", item.day, unit: .day),
-                    y: .value(
-                        displayType == .duration ? "Minutes" : "Steps",
-                        displayType == .duration
-                        ? item.totalDuration / 60
-                        :  Double(item.totalSteps)
-                    )
+        Chart(dailyTotals) { item in
+            BarMark(
+                x: .value("Day", item.day, unit: .day),
+                y: .value(
+                    displayType == .duration ? "Minutes" : "Steps",
+                    displayType == .duration
+                    ? item.totalDuration / 60
+                    :  Double(item.totalSteps)
                 )
+            )
 
-                if let selectedDailyTotal {
-                    RuleMark(x: .value("Selected Day", selectedDailyTotal.day, unit: .day))
-                        .foregroundStyle(.secondary.opacity(0.35))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
-                }
+            if let activeDailyTotal {
+                RuleMark(x: .value("Selected Day", activeDailyTotal.day, unit: .day))
+                    .foregroundStyle(.secondary.opacity(0.35))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
             }
-            .chartXSelection(value: $selectedChartDay)
+        }
+        .chartXSelection(value: $selectedChartDay)
+        .chartOverlay { _ in
+            if let activeDailyTotal {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(selectedDailyValueText(for: activeDailyTotal))
+                        .font(.headline)
 
-            if let selectedDailyTotal {
-                HStack(spacing: 8) {
-                    Text(selectedDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
-                        .font(.footnote.weight(.semibold))
-
-                    Text("•")
-                        .foregroundStyle(.secondary)
-
-                    Text(selectedDailyValueText(for: selectedDailyTotal))
-                        .font(.footnote)
+                    Text(activeDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, 2)
-            } else {
-                Text("Tap a bar for details")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 2)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.top, 8)
+                .padding(.leading, 8)
+                .allowsHitTesting(false)
+            }
+        }
+        .onAppear {
+            if selectedChartDay == nil {
+                selectedChartDay = dailyTotals.last?.day
             }
         }
         .frame(height: 220)
@@ -173,6 +175,10 @@ struct HistoryView: View {
         return dailyTotals.min {
             abs($0.day.timeIntervalSince(selectedChartDay)) < abs($1.day.timeIntervalSince(selectedChartDay))
         }
+    }
+
+    private var activeDailyTotal: HistoryDailyWalkTotal? {
+        selectedDailyTotal ?? dailyTotals.last
     }
 
     private func selectedDailyValueText(for total: HistoryDailyWalkTotal) -> String {
