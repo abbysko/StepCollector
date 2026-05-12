@@ -129,13 +129,14 @@ struct HistoryView: View {
             let yValue = displayType == .duration
                 ? item.totalDuration / 60
                 : Double(item.totalSteps)
-            let isSelected = activeDailyTotal?.day == item.day
+            let hasSelection = selectedDailyTotal != nil
+            let isSelected = selectedDailyTotal?.day == item.day
 
             BarMark(
                 x: .value("Day", item.day, unit: .day),
                 y: .value(yLabel, yValue)
             )
-            .foregroundStyle(isSelected ? .blue : .blue.opacity(0.55))
+            .foregroundStyle(hasSelection ? (isSelected ? .blue : .blue.opacity(0.55)) : .blue)
         }
         .chartOverlay { chartProxy in
             GeometryReader { geometry in
@@ -145,23 +146,39 @@ struct HistoryView: View {
                     .gesture(
                         SpatialTapGesture()
                             .onEnded { value in
-                                selectDailyTotal(at: value.location, chartProxy: chartProxy, geometry: geometry)
+                                toggleDailySelection(at: value.location, chartProxy: chartProxy, geometry: geometry)
                             }
                     )
                     .simultaneousGesture(
-                        DragGesture(minimumDistance: 0)
+                        DragGesture(minimumDistance: 8)
                             .onChanged { value in
-                                selectDailyTotal(at: value.location, chartProxy: chartProxy, geometry: geometry)
+                                updateDailySelection(at: value.location, chartProxy: chartProxy, geometry: geometry)
                             }
                     )
 
-                if let activeDailyTotal {
+                if let selectedDailyTotal {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(activeDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
+                        Text(selectedDailyTotal.day.formatted(date: .abbreviated, time: .omitted))
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
-                        Text(selectedDailyValueText(for: activeDailyTotal))
+                        Text(selectedDailyValueText(for: selectedDailyTotal))
+                            .font(.headline)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.top, 8)
+                    .padding(.leading, 8)
+                    .allowsHitTesting(false)
+                } else {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Daily average (\(dailyTotals.count) days)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text(averageDailyValueText)
                             .font(.headline)
                     }
                     .padding(.horizontal, 10)
@@ -172,11 +189,6 @@ struct HistoryView: View {
                     .padding(.leading, 8)
                     .allowsHitTesting(false)
                 }
-            }
-        }
-        .onAppear {
-            if selectedChartDay == nil {
-                selectedChartDay = dailyTotals.last?.day
             }
         }
         .frame(height: 220)
@@ -190,10 +202,6 @@ struct HistoryView: View {
         }
     }
 
-    private var activeDailyTotal: HistoryDailyWalkTotal? {
-        selectedDailyTotal ?? dailyTotals.last
-    }
-
     private func selectedDailyValueText(for total: HistoryDailyWalkTotal) -> String {
         if displayType == .duration {
             let minutes = Int((total.totalDuration / 60).rounded())
@@ -203,21 +211,65 @@ struct HistoryView: View {
         return "\(total.totalSteps) steps"
     }
 
-    private func selectDailyTotal(
+    private var averageDailyValueText: String {
+        guard !dailyTotals.isEmpty else {
+            return displayType == .duration ? "0 min" : "0 steps"
+        }
+
+        if displayType == .duration {
+            let averageMinutes = dailyTotals.reduce(0) { $0 + ($1.totalDuration / 60) } / Double(dailyTotals.count)
+            return "\(Int(averageMinutes.rounded())) min"
+        }
+
+        let averageSteps = Double(dailyTotals.reduce(0) { $0 + $1.totalSteps }) / Double(dailyTotals.count)
+        return "\(Int(averageSteps.rounded())) steps"
+    }
+
+    private func updateDailySelection(
         at location: CGPoint,
         chartProxy: ChartProxy,
         geometry: GeometryProxy
     ) {
-        guard let plotFrame = chartProxy.plotFrame else { return }
+        selectedChartDay = nearestDailyDay(at: location, chartProxy: chartProxy, geometry: geometry)
+    }
+
+    private func toggleDailySelection(
+        at location: CGPoint,
+        chartProxy: ChartProxy,
+        geometry: GeometryProxy
+    ) {
+        guard let nearestDay = nearestDailyDay(at: location, chartProxy: chartProxy, geometry: geometry) else {
+            return
+        }
+
+        if let selectedChartDay,
+           Calendar.current.isDate(nearestDay, inSameDayAs: selectedChartDay) {
+            self.selectedChartDay = nil
+        } else {
+            selectedChartDay = nearestDay
+        }
+    }
+
+    private func nearestDailyDay(
+        at location: CGPoint,
+        chartProxy: ChartProxy,
+        geometry: GeometryProxy
+    ) -> Date? {
+        guard let plotFrame = chartProxy.plotFrame else { return nil }
         let plotAreaFrame = geometry[plotFrame]
         let xPosition = location.x - plotAreaFrame.origin.x
 
-        guard xPosition >= 0, xPosition <= chartProxy.plotSize.width else { return }
-        guard let selectedDate: Date = chartProxy.value(atX: xPosition) else { return }
+        guard xPosition >= 0, xPosition <= chartProxy.plotSize.width else { return nil }
 
-        selectedChartDay = dailyTotals.min {
-            abs($0.day.timeIntervalSince(selectedDate)) < abs($1.day.timeIntervalSince(selectedDate))
+        return dailyTotals.min { lhs, rhs in
+            let lhsX = chartProxy.position(forX: dayCenter(for: lhs.day)) ?? .greatestFiniteMagnitude
+            let rhsX = chartProxy.position(forX: dayCenter(for: rhs.day)) ?? .greatestFiniteMagnitude
+            return abs(lhsX - xPosition) < abs(rhsX - xPosition)
         }?.day
+    }
+
+    private func dayCenter(for day: Date) -> Date {
+        Calendar.current.date(byAdding: .hour, value: 12, to: day) ?? day
     }
     
     private var cumulativeTotals: [HistoryCumulativeTotals] {
