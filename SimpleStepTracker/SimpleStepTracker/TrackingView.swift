@@ -143,13 +143,13 @@ struct TrackingView: View {
             }
             .buttonStyle(.borderedProminent)
             
-            Button("Reset") {
+            Button("Clear & Reset") {
                 showingClearConfirmation = true
             }
             .buttonStyle(.bordered)
             .tint(.red)
             .confirmationDialog(
-                "Reset this session?",
+                "Clear & reset this session?",
                 isPresented: $showingClearConfirmation,
                 titleVisibility: .visible
             ) {
@@ -319,6 +319,14 @@ struct TrackingView: View {
     TrackingView(
         startTime: .constant(Date().addingTimeInterval(-256)),
         isPaused: .constant(false),
+        selectedGroup: .constant(WalkGroup(name: "Walks with kids"))
+    )
+}
+
+#Preview("Paused save/reset"){
+    TrackingView(
+        startTime: .constant(Date().addingTimeInterval(-256)),
+        isPaused: .constant(true),
         selectedGroup: .constant(WalkGroup(name: "Walks with kids"))
     )
 }
