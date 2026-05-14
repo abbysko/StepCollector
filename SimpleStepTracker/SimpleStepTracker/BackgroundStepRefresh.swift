@@ -14,6 +14,10 @@ enum BackgroundStepRefresh {
     static let taskIdentifier = "com.abbysko.SimpleStepTracker.stepRefresh"
 
     static func schedule() {
+        guard !Activity<TrackingActivityAttributes>.activities.isEmpty else {
+            return
+        }
+
         let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
         request.earliestBeginDate = Date().addingTimeInterval(20)
 
