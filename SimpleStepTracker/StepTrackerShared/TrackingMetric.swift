@@ -67,7 +67,7 @@ public struct TrackingMetric: View {
     
     public var body: some View {
         if inlineHeader {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+            HStack(alignment: .center, spacing: 6) {
                 titleText
                 valueText
             }
