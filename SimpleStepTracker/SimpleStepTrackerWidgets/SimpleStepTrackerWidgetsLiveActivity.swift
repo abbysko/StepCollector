@@ -21,16 +21,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
 
         } dynamicIsland: { context in
             DynamicIsland {
-                DynamicIslandExpandedRegion(.leading) {
-                    Text("Tracking")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text("\(context.state.stepCount) steps")
-                        .font(.caption)
-                }
-                DynamicIslandExpandedRegion(.bottom) {
+                DynamicIslandExpandedRegion(.center) {
                     TrackingLiveActivityView(
                         groupName: context.attributes.groupName,
                         elapsedSeconds: context.state.elapsedSeconds,
@@ -38,12 +29,19 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                     )
                 }
             } compactLeading: {
-                Image(systemName: "figure.walk")
+                HStack() {
+                    WalkerIcon(size: 20, style: .circle)
+                    GroupNameText(context.attributes.groupName)
+                }
             } compactTrailing: {
-                Text(TimeInterval(context.state.elapsedSeconds).stopwatchFormatted)
-                    .monospacedDigit()
+                TrackingMetric(
+                    type: .steps,
+                    value: "\(context.state.stepCount)",
+                    context: .liveActivity,
+                    inlineHeader: true
+                )
             } minimal: {
-                Image(systemName: "figure.walk")
+                WalkerIcon(size: 20, style: .circle)
             }
             .keylineTint(.green)
         }
@@ -64,16 +62,22 @@ private struct TrackingLiveActivityView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                Text(groupName)
-                    .font(.footnote.weight(.semibold))
-                    .lineLimit(1)
+                GroupNameText(groupName)
             }
 
             Spacer()
 
             HStack(alignment: .center, spacing: 20) {
-                LiveMetric(title: "Time", value: TimeInterval(elapsedSeconds).stopwatchFormatted, tint: .green)
-                LiveMetric(title: "Steps", value: "\(stepCount)", tint: .cyan)
+                TrackingMetric(
+                    type: .time,
+                    value: TimeInterval(elapsedSeconds).stopwatchFormatted,
+                    context: .liveActivity
+                )
+                TrackingMetric(
+                    type: .steps,
+                    value: "\(stepCount)",
+                    context: .liveActivity
+                )
             }
         }
         .padding(.horizontal, 16)
@@ -81,23 +85,17 @@ private struct TrackingLiveActivityView: View {
     }
 }
 
+private struct GroupNameText: View {
+    let groupName: String
 
-private struct LiveMetric: View {
-    let title: String
-    let value: String
-    let tint: Color
+    init(_ groupName: String) {
+        self.groupName = groupName
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Text(value)
-                .font(.system(size: 22, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(tint)
-        }
+        Text(groupName)
+            .font(.footnote.weight(.semibold))
+            .lineLimit(1)
     }
 }
 
@@ -113,7 +111,25 @@ extension TrackingActivityAttributes.ContentState {
     }
 }
 
-#Preview("Notification", as: .content, using: TrackingActivityAttributes.preview) {
+#Preview("Lock Screen", as: .content, using: TrackingActivityAttributes.preview) {
+   SimpleStepTrackerWidgetsLiveActivity()
+} contentStates: {
+    TrackingActivityAttributes.ContentState.preview
+}
+
+#Preview("DI Expanded", as: .dynamicIsland(.expanded), using: TrackingActivityAttributes.preview) {
+   SimpleStepTrackerWidgetsLiveActivity()
+} contentStates: {
+    TrackingActivityAttributes.ContentState.preview
+}
+
+#Preview("DI Compact", as: .dynamicIsland(.compact), using: TrackingActivityAttributes.preview) {
+   SimpleStepTrackerWidgetsLiveActivity()
+} contentStates: {
+    TrackingActivityAttributes.ContentState.preview
+}
+
+#Preview("DI Minimal", as: .dynamicIsland(.minimal), using: TrackingActivityAttributes.preview) {
    SimpleStepTrackerWidgetsLiveActivity()
 } contentStates: {
     TrackingActivityAttributes.ContentState.preview

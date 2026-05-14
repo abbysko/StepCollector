@@ -8,17 +8,25 @@
 import SwiftUI
 
 public struct WalkerIcon: View {
-    public var size: CGFloat = 40
-    /// cornerRadius is now always 25% of size by default
-    public var cornerRadius: CGFloat? = nil
+    public enum Style {
+        case rounded
+        case circle
+    }
 
-    public init(size: CGFloat = 40, cornerRadius: CGFloat? = nil) {
+    public var size: CGFloat = 40
+    public var cornerRadius: CGFloat? = nil
+    public var style: Style = .rounded
+
+    public init(size: CGFloat = 40, cornerRadius: CGFloat? = nil, style: Style = .rounded) {
         self.size = size
         self.cornerRadius = cornerRadius
+        self.style = style
     }
 
     public var body: some View {
         let resolvedCornerRadius = cornerRadius ?? size * 0.25
+        let symbolPadding = style == .circle ? size * 0.12 : size * 0.18
+
         ZStack {
             LinearGradient(
                 colors: [Color(red: 0.75, green: 0.25, blue: 0.65), Color(red: 0.15, green: 0.15, blue: 0.85)],
@@ -28,11 +36,17 @@ public struct WalkerIcon: View {
             Image(systemName: "figure.walk")
                 .resizable()
                 .scaledToFit()
-                .padding(size * 0.18)
+                .padding(symbolPadding)
                 .foregroundStyle(.white)
         }
         .frame(width: size, height: size)
-        .clipShape(RoundedRectangle(cornerRadius: resolvedCornerRadius, style: .continuous))
+        .mask {
+            if style == .circle {
+                Circle()
+            } else {
+                RoundedRectangle(cornerRadius: resolvedCornerRadius, style: .continuous)
+            }
+        }
     }
 }
 
@@ -42,5 +56,6 @@ public struct WalkerIcon: View {
         WalkerIcon(size: 32)
         WalkerIcon(size: 24)
         WalkerIcon(size: 60)
+        WalkerIcon(size: 28, style: .circle)
     }
 }
