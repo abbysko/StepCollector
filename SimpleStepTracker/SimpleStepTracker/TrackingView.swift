@@ -53,6 +53,9 @@ struct TrackingView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            syncExistingLiveActivity()
+        }
     }
     
     private var startButton: some View {
@@ -61,6 +64,7 @@ struct TrackingView: View {
                 let startedAt = Date()
                 startTime = startedAt
                 initializeSessionState()
+                startLiveActivity()
                 startPedometerUpdates(from: startedAt)
             }
             isPaused = false
@@ -189,6 +193,11 @@ struct TrackingView: View {
     }
 
     private func startLiveActivity() {
+        if let existing = Activity<TrackingActivityAttributes>.activities.first {
+            currentActivity = existing
+            return
+        }
+
         guard let selectedGroup else { return }
         let attributes = TrackingActivityAttributes(groupName: selectedGroup.name)
         let initialState = TrackingActivityAttributes.ContentState(
@@ -207,6 +216,10 @@ struct TrackingView: View {
         }
     }
 
+    private func syncExistingLiveActivity() {
+        currentActivity = Activity<TrackingActivityAttributes>.activities.first
+    }
+
     private func updateLiveActivity(elapsed: Int, steps: Int) {
         guard currentActivity != nil else { return }
         let updatedState = TrackingActivityAttributes.ContentState(
@@ -220,10 +233,21 @@ struct TrackingView: View {
     }
 
     private func endLiveActivity() {
-        guard let currentActivity else { return }
-
         Task {
-            await currentActivity.end(.init(state: currentActivity.content.state, staleDate: nil), dismissalPolicy: .immediate)
+            if let currentActivity {
+                await currentActivity.end(
+                    .init(state: currentActivity.content.state, staleDate: nil),
+                    dismissalPolicy: .immediate
+                )
+            }
+
+            for activity in Activity<TrackingActivityAttributes>.activities {
+                await activity.end(
+                    .init(state: activity.content.state, staleDate: nil),
+                    dismissalPolicy: .immediate
+                )
+            }
+
             self.currentActivity = nil
         }
     }
@@ -240,7 +264,6 @@ struct TrackingView: View {
         pausedDate = nil
         currentStepCount = 0
         trackingIssueMessage = nil
-        startLiveActivity()
     }
 
     private func trackingNotice(for current: Date) -> TrackingNotice? {
