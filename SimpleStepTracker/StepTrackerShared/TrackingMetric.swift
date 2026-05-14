@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 public enum MetricType {
     case time
@@ -50,12 +51,18 @@ public struct TrackingMetric: View {
     public let value: String
     public let context: MetricContext
     public let inlineHeader: Bool
+    public let elapsed: TimeInterval?
+    public let timerStartedAt: Date?
+    public let startedAt: Date?
 
     public init(type: MetricType, value: String, context: MetricContext) {
         self.type = type
         self.value = value
         self.context = context
         self.inlineHeader = false
+        self.elapsed = nil
+        self.timerStartedAt = nil
+        self.startedAt = nil
     }
 
     public init(type: MetricType, value: String, context: MetricContext, inlineHeader: Bool = false) {
@@ -63,6 +70,19 @@ public struct TrackingMetric: View {
         self.value = value
         self.context = context
         self.inlineHeader = inlineHeader
+        self.elapsed = nil
+        self.timerStartedAt = nil
+        self.startedAt = nil
+    }
+
+    public init(type: MetricType, value: String, context: MetricContext, inlineHeader: Bool = false, elapsed: TimeInterval? = nil, timerStartedAt: Date? = nil, startedAt: Date? = nil) {
+        self.type = type
+        self.value = value
+        self.context = context
+        self.inlineHeader = inlineHeader
+        self.elapsed = elapsed
+        self.timerStartedAt = timerStartedAt
+        self.startedAt = startedAt
     }
     
     public var body: some View {
@@ -85,11 +105,31 @@ public struct TrackingMetric: View {
             .foregroundStyle(.secondary)
     }
 
+    @ViewBuilder
     private var valueText: some View {
-        Text(displayValue)
-            .font(.system(size: context.fontSize, weight: .bold, design: .rounded))
-            .monospacedDigit()
-            .foregroundStyle(type.tint)
+        if type == .time {
+            if let timerStartedAt {
+                Text(timerInterval: timerStartedAt...Date.distantFuture, countsDown: false, showsHours: true)
+                    .font(.system(size: context.fontSize, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(type.tint)
+            } else if let elapsed {
+                Text(elapsed.compactStopwatchFormatted)
+                    .font(.system(size: context.fontSize, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(type.tint)
+            } else {
+                Text(displayValue)
+                    .font(.system(size: context.fontSize, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(type.tint)
+            }
+        } else {
+            Text(displayValue)
+                .font(.system(size: context.fontSize, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(type.tint)
+        }
     }
 
     private var displayValue: String {

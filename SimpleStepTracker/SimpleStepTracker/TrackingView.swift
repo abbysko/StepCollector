@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import CoreMotion
 import ActivityKit
 import StepTrackerShared
 
@@ -18,10 +17,7 @@ struct TrackingView: View {
     
     @State private var showingClearConfirmation = false
     @State private var pausedDate: Date? = nil
-    @State private var currentStepCount = 0
-    @State private var trackingIssueMessage: String? = nil
-    @State private var pedometer = CMPedometer()
-    @State private var isPedometerRunning = false
+    @StateObject private var stepTracker = StepTracker()
     @State private var currentActivity: Activity<TrackingActivityAttributes>?
 
     init(
@@ -79,6 +75,7 @@ struct TrackingView: View {
             isPaused = true
             pausedDate = Date()
             stopPedometerUpdates()
+            endLiveActivity()
         }
         .buttonStyle(.borderedProminent)
         .tint(.red)
@@ -92,35 +89,37 @@ struct TrackingView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    let current = isPaused ? (pausedDate ?? context.date) : context.date
-                    let notice = trackingNotice(for: current)
-                    let elapsed = Int(current.timeIntervalSince(startTime))
-
-                    VStack(spacing: 28) {
+                VStack(spacing: 28) {
+                    if isPaused {
+                        let elapsed = Int((pausedDate ?? Date()).timeIntervalSince(startTime))
                         TrackingMetric(
                             type: .time,
-                            value: current.timeIntervalSince(startTime).stopwatchFormatted,
+                            value: TimeInterval(elapsed).stopwatchFormatted,
                             context: .app
                         )
-
+                    } else {
                         TrackingMetric(
-                            type: .steps,
-                            value: "\(currentStepCount)",
-                            context: .app
+                            type: .time,
+                            value: "",
+                            context: .app,
+                            timerStartedAt: startTime
                         )
+                    }
 
-                        if let notice {
-                            noticeBanner(notice)
-                        }
+                    TrackingMetric(
+                        type: .steps,
+                        value: "\(stepTracker.currentStepCount)",
+                        context: .app
+                    )
+
+                    if let notice = trackingNotice() {
+                        noticeBanner(notice)
                     }
-                    .padding(.top, 8)
-                    .onChange(of: elapsed) { _, newElapsed in
-                        updateLiveActivity(elapsed: newElapsed, steps: currentStepCount)
-                    }
-                    .onChange(of: currentStepCount) { _, newSteps in
-                        updateLiveActivity(elapsed: elapsed, steps: newSteps)
-                    }
+                }
+                .padding(.top, 8)
+                .onChange(of: stepTracker.currentStepCount) { _, newSteps in
+                    let elapsed = Int(Date().timeIntervalSince(startTime))
+                    updateLiveActivity(elapsed: elapsed, steps: newSteps)
                 }
             }
         }
@@ -134,7 +133,7 @@ struct TrackingView: View {
                 
                 let endTime = isPaused ? (pausedDate ?? Date()) : Date()
                 let elapsed = endTime.timeIntervalSince(start)
-                let steps = max(0, currentStepCount)
+                let steps = max(0, stepTracker.currentStepCount)
                 
                 let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
                 selectedGroup.sessions.append(session)
@@ -165,31 +164,11 @@ struct TrackingView: View {
     }
     
     private func startPedometerUpdates(from start: Date) {
-        guard CMPedometer.isStepCountingAvailable() else {
-            trackingIssueMessage = "Step counting isn't available on this device."
-            return
-        }
-
-        isPedometerRunning = true
-        pedometer.startUpdates(from: start) { data, error in
-            DispatchQueue.main.async {
-                if error != nil {
-                    isPedometerRunning = false
-                    trackingIssueMessage = "Unable to read step data from the pedometer. Check Motion & Fitness permissions in Settings."
-                    return
-                }
-
-                if let steps = data?.numberOfSteps.intValue {
-                    currentStepCount = steps
-                }
-            }
-        }
+        stepTracker.startUpdates(from: start)
     }
 
     private func stopPedometerUpdates() {
-        guard isPedometerRunning else { return }
-        pedometer.stopUpdates()
-        isPedometerRunning = false
+        stepTracker.stopUpdates()
     }
 
     private func startLiveActivity() {
@@ -199,10 +178,14 @@ struct TrackingView: View {
         }
 
         guard let selectedGroup else { return }
-        let attributes = TrackingActivityAttributes(groupName: selectedGroup.name)
+        let attributes = TrackingActivityAttributes(
+            groupName: selectedGroup.name,
+            startedAt: startTime ?? Date()
+        )
         let initialState = TrackingActivityAttributes.ContentState(
             elapsedSeconds: 0,
-            stepCount: 0
+            stepCount: 0,
+            lastStepRefreshAt: .now
         )
 
         do {
@@ -220,11 +203,12 @@ struct TrackingView: View {
         currentActivity = Activity<TrackingActivityAttributes>.activities.first
     }
 
-    private func updateLiveActivity(elapsed: Int, steps: Int) {
+    private func updateLiveActivity(elapsed: Int, steps: Int, refreshedAt: Date = .now) {
         guard currentActivity != nil else { return }
         let updatedState = TrackingActivityAttributes.ContentState(
             elapsedSeconds: elapsed,
-            stepCount: steps
+            stepCount: steps,
+            lastStepRefreshAt: refreshedAt
         )
 
         Task {
@@ -262,15 +246,15 @@ struct TrackingView: View {
 
     private func initializeSessionState() {
         pausedDate = nil
-        currentStepCount = 0
-        trackingIssueMessage = nil
+        stepTracker.currentStepCount = 0
+        stepTracker.errorMessage = nil
     }
 
-    private func trackingNotice(for current: Date) -> TrackingNotice? {
-        if let trackingIssueMessage {
+    private func trackingNotice() -> TrackingNotice? {
+        if let errorMessage = stepTracker.errorMessage {
             return TrackingNotice(
                 systemImage: "exclamationmark.triangle.fill",
-                message: trackingIssueMessage,
+                message: errorMessage,
                 tint: .orange
             )
         }
@@ -330,5 +314,3 @@ struct TrackingView: View {
         selectedGroup: .constant(WalkGroup(name: "Walks with kids"))
     )
 }
-
-

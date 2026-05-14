@@ -15,8 +15,9 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
             TrackingLiveActivityView(
                 groupName: context.attributes.groupName,
-                elapsedSeconds: context.state.elapsedSeconds,
-                stepCount: context.state.stepCount
+                startedAt: context.attributes.startedAt,
+                stepCount: context.state.stepCount,
+                lastStepRefreshAt: context.state.lastStepRefreshAt
             )
 
         } dynamicIsland: { context in
@@ -24,8 +25,9 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.center) {
                     TrackingLiveActivityView(
                         groupName: context.attributes.groupName,
-                        elapsedSeconds: context.state.elapsedSeconds,
-                        stepCount: context.state.stepCount
+                        startedAt: context.attributes.startedAt,
+                        stepCount: context.state.stepCount,
+                        lastStepRefreshAt: context.state.lastStepRefreshAt
                     )
                 }
             } compactLeading: {
@@ -36,7 +38,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
             } compactTrailing: {
                 TrackingMetric(
                     type: .steps,
-                    value: "\(context.state.stepCount)",
+                    value: formattedStepValue(stepCount: context.state.stepCount, lastStepRefreshAt: context.state.lastStepRefreshAt),
                     context: .liveActivity,
                     inlineHeader: true
                 )
@@ -50,8 +52,9 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
 
 private struct TrackingLiveActivityView: View {
     let groupName: String
-    let elapsedSeconds: Int
+    let startedAt: Date
     let stepCount: Int
+    let lastStepRefreshAt: Date?
 
     var body: some View {
         HStack(spacing: 16) {
@@ -70,12 +73,13 @@ private struct TrackingLiveActivityView: View {
             HStack(alignment: .center, spacing: 20) {
                 TrackingMetric(
                     type: .time,
-                    value: TimeInterval(elapsedSeconds).stopwatchFormatted,
-                    context: .liveActivity
+                    value: "",
+                    context: .liveActivity,
+                    timerStartedAt: startedAt
                 )
                 TrackingMetric(
                     type: .steps,
-                    value: "\(stepCount)",
+                    value: formattedStepValue(stepCount: stepCount, lastStepRefreshAt: lastStepRefreshAt),
                     context: .liveActivity
                 )
             }
@@ -83,6 +87,17 @@ private struct TrackingLiveActivityView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
     }
+}
+
+private let stepFreshnessWindow: TimeInterval = 10
+
+private func formattedStepValue(stepCount: Int, lastStepRefreshAt: Date?) -> String {
+    guard let lastStepRefreshAt,
+          Date().timeIntervalSince(lastStepRefreshAt) <= stepFreshnessWindow else {
+        return "--"
+    }
+
+    return "\(stepCount)"
 }
 
 private struct GroupNameText: View {
@@ -101,13 +116,13 @@ private struct GroupNameText: View {
 
 extension TrackingActivityAttributes {
     fileprivate static var preview: TrackingActivityAttributes {
-        TrackingActivityAttributes(groupName: "My Walks")
+        TrackingActivityAttributes(groupName: "My Walks", startedAt: .now.addingTimeInterval(-300))
     }
 }
 
 extension TrackingActivityAttributes.ContentState {
     fileprivate static var preview: TrackingActivityAttributes.ContentState {
-        TrackingActivityAttributes.ContentState(elapsedSeconds: 300, stepCount: 1247)
+        TrackingActivityAttributes.ContentState(elapsedSeconds: 300, stepCount: 1247, lastStepRefreshAt: .now)
     }
 }
 
