@@ -8,15 +8,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
-
-struct TrackingActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var elapsedSeconds: Int
-        var stepCount: Int
-    }
-
-    var groupName: String
-}
+import StepTrackerShared
 
 struct SimpleStepTrackerWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -65,7 +57,7 @@ private struct TrackingLiveActivityView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            LiveWalkerIcon(size: 28, cornerRadius: 8)
+            WalkerIcon(size: 36)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Tracking")
@@ -89,26 +81,6 @@ private struct TrackingLiveActivityView: View {
     }
 }
 
-private struct LiveWalkerIcon: View {
-    let size: CGFloat
-    let cornerRadius: CGFloat
-
-    var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.75, green: 0.25, blue: 0.65), Color(red: 0.15, green: 0.15, blue: 0.85)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            Image(systemName: "figure.walk")
-                .foregroundStyle(.white)
-                .font(.system(size: size * 0.45, weight: .semibold))
-        }
-        .frame(width: size, height: size)
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-    }
-}
 
 private struct LiveMetric: View {
     let title: String
@@ -126,16 +98,6 @@ private struct LiveMetric: View {
                 .monospacedDigit()
                 .foregroundStyle(tint)
         }
-    }
-}
-
-private extension TimeInterval {
-    var stopwatchFormatted: String {
-        let elapsed = max(0, Int(self))
-        let hours = elapsed / 3600
-        let minutes = (elapsed % 3600) / 60
-        let seconds = elapsed % 60
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }
 

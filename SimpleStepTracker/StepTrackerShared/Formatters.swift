@@ -1,13 +1,13 @@
 //
 //  Formatters.swift
-//  SimpleStepTracker
+//  StepTrackerShared
 //
 //  Created by Abigail Skofield on 5/6/26.
 //
 
 import Foundation
 
-extension TimeInterval {
+public extension TimeInterval {
     /// Formats the interval as a stopwatch string: `HH:MM:SS`.
     var stopwatchFormatted: String {
         let elapsed = max(0, Int(self))

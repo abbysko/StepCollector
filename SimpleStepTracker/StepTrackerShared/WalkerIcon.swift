@@ -7,11 +7,18 @@
 
 import SwiftUI
 
-struct WalkerIcon: View {
-    var size: CGFloat = 40
-    var cornerRadius: CGFloat = 10
+public struct WalkerIcon: View {
+    public var size: CGFloat = 40
+    /// cornerRadius is now always 25% of size by default
+    public var cornerRadius: CGFloat? = nil
 
-    var body: some View {
+    public init(size: CGFloat = 40, cornerRadius: CGFloat? = nil) {
+        self.size = size
+        self.cornerRadius = cornerRadius
+    }
+
+    public var body: some View {
+        let resolvedCornerRadius = cornerRadius ?? size * 0.25
         ZStack {
             LinearGradient(
                 colors: [Color(red: 0.75, green: 0.25, blue: 0.65), Color(red: 0.15, green: 0.15, blue: 0.85)],
@@ -19,11 +26,13 @@ struct WalkerIcon: View {
                 endPoint: .bottomTrailing
             )
             Image(systemName: "figure.walk")
+                .resizable()
+                .scaledToFit()
+                .padding(size * 0.18)
                 .foregroundStyle(.white)
-                .font(.system(size: size * 0.45, weight: .semibold))
         }
         .frame(width: size, height: size)
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: resolvedCornerRadius, style: .continuous))
     }
 }
 
@@ -32,5 +41,6 @@ struct WalkerIcon: View {
         WalkerIcon(size: 40)
         WalkerIcon(size: 32)
         WalkerIcon(size: 24)
+        WalkerIcon(size: 60)
     }
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import StepTrackerShared
 
 struct ContentView: View {
     @State private var isPaused = false

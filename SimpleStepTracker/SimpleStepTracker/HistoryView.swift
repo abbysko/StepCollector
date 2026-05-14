@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 import SwiftData
+import StepTrackerShared
 
 struct HistoryView: View {
     @State private var displayType: DisplayOption = .steps
