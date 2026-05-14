@@ -7,8 +7,6 @@
 
 import SwiftUI
 import CoreMotion
-import UserNotifications
-import Combine
 
 struct TrackingView: View {
     
@@ -22,10 +20,8 @@ struct TrackingView: View {
     @State private var trackingIssueMessage: String? = nil
     @State private var pedometer = CMPedometer()
     @State private var isPedometerRunning = false
-    @State private var hasNotifiedLongSession = false
 
     private let zeroStepTimeoutThreshold: TimeInterval = 180
-    private let longSessionThreshold: TimeInterval = 3600
     
     var body: some View {
         VStack(spacing: 24) {
@@ -46,15 +42,6 @@ struct TrackingView: View {
             Spacer()
         }
         .padding()
-        .onReceive(Timer.publish(every: 30, on: .main, in: .common).autoconnect()) { _ in
-            if let startTime {
-                let elapsed = (isPaused ? (pausedDate ?? Date()) : Date()).timeIntervalSince(startTime)
-                if elapsed >= longSessionThreshold && !hasNotifiedLongSession {
-                    hasNotifiedLongSession = true
-                    scheduleSessionReminder()
-                }
-            }
-        }
     }
     
     private var startButton: some View {
@@ -129,8 +116,7 @@ struct TrackingView: View {
                 
                 let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
                 selectedGroup.sessions.append(session)
-                
-                cancelSessionReminder()
+
                 resetSession()
             }
             .buttonStyle(.borderedProminent)
@@ -188,7 +174,6 @@ struct TrackingView: View {
         startTime = nil
         isPaused = false
         initializeSessionState()
-        cancelSessionReminder()
         stopPedometerUpdates()
     }
 
@@ -196,23 +181,6 @@ struct TrackingView: View {
         pausedDate = nil
         currentStepCount = 0
         trackingIssueMessage = nil
-        hasNotifiedLongSession = false
-    }
-
-    private func scheduleSessionReminder() {
-        let content = UNMutableNotificationContent()
-        content.title = "Still tracking?"
-        content.body = "Your walk session has been running for over an hour. Save or reset it when you're done."
-        content.sound = .default
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3600, repeats: true)
-        let request = UNNotificationRequest(identifier: "longSessionReminder", content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request)
-    }
-
-    private func cancelSessionReminder() {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["longSessionReminder"])
     }
 
     private func trackingNotice(for current: Date) -> TrackingNotice? {
