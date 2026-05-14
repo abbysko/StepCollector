@@ -53,18 +53,7 @@ struct ContentView: View {
 
     private var appHeader: some View {
         HStack(spacing: 12) {
-            ZStack {
-                LinearGradient(
-                    colors: [Color(red: 0.75, green: 0.25, blue: 0.65), Color(red: 0.15, green: 0.15, blue: 0.85)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                Image(systemName: "figure.walk")
-                    .foregroundStyle(.white)
-                    .font(.system(size: 18, weight: .semibold))
-            }
-            .frame(width: 40, height: 40)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            WalkerIcon(size: 40, cornerRadius: 10)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(selectedTab.title)
