@@ -28,6 +28,8 @@
 	<string>SimpleStepTracker uses Motion &amp; Fitness to show live step counts while you walk.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

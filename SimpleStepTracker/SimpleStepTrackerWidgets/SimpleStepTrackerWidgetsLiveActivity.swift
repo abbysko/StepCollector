@@ -13,21 +13,21 @@ import StepTrackerShared
 struct SimpleStepTrackerWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
+            let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
             TrackingLiveActivityView(
                 groupName: context.attributes.groupName,
                 startedAt: context.attributes.startedAt,
-                stepCount: context.state.stepCount,
-                isStale: context.isStale
+                stepCount: stepValue
             )
 
         } dynamicIsland: { context in
-            DynamicIsland {
+            let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
+            return DynamicIsland {
                 DynamicIslandExpandedRegion(.center) {
                     TrackingLiveActivityView(
                         groupName: context.attributes.groupName,
                         startedAt: context.attributes.startedAt,
-                        stepCount: context.state.stepCount,
-                        isStale: context.isStale
+                        stepCount: stepValue
                     )
                 }
             } compactLeading: {
@@ -38,7 +38,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
             } compactTrailing: {
                 TrackingMetric(
                     type: .steps,
-                    value: context.isStale ? "--" : "\(context.state.stepCount)",
+                    value: stepValue,
                     context: .liveActivity,
                     inlineHeader: true
                 )
@@ -53,8 +53,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
 private struct TrackingLiveActivityView: View {
     let groupName: String
     let startedAt: Date
-    let stepCount: Int
-    let isStale: Bool
+    let stepCount: String
 
     var body: some View {
         HStack(spacing: 16) {
@@ -79,7 +78,7 @@ private struct TrackingLiveActivityView: View {
                 )
                 TrackingMetric(
                     type: .steps,
-                    value: isStale ? "--" : "\(stepCount)",
+                    value: stepCount,
                     context: .liveActivity
                 )
             }

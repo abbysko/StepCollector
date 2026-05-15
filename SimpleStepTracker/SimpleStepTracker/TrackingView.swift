@@ -210,7 +210,7 @@ struct TrackingView: View {
         )
 
         Task {
-            await currentActivity?.update(.init(state: updatedState, staleDate: Date().addingTimeInterval(10)))
+            await currentActivity?.update(.init(state: updatedState, staleDate: Date().addingTimeInterval(30)))
         }
     }
 
