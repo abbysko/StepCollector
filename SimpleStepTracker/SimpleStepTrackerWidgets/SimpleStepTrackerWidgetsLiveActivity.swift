@@ -17,7 +17,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                 groupName: context.attributes.groupName,
                 startedAt: context.attributes.startedAt,
                 stepCount: context.state.stepCount,
-                lastStepRefreshAt: context.state.lastStepRefreshAt
+                isStale: context.isStale
             )
 
         } dynamicIsland: { context in
@@ -27,7 +27,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                         groupName: context.attributes.groupName,
                         startedAt: context.attributes.startedAt,
                         stepCount: context.state.stepCount,
-                        lastStepRefreshAt: context.state.lastStepRefreshAt
+                        isStale: context.isStale
                     )
                 }
             } compactLeading: {
@@ -36,14 +36,12 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                     GroupNameText(context.attributes.groupName)
                 }
             } compactTrailing: {
-                TimelineView(.explicit(staleDates(for: context.state.lastStepRefreshAt))) { _ in
-                    TrackingMetric(
-                        type: .steps,
-                        value: formattedStepValue(stepCount: context.state.stepCount, lastStepRefreshAt: context.state.lastStepRefreshAt),
-                        context: .liveActivity,
-                        inlineHeader: true
-                    )
-                }
+                TrackingMetric(
+                    type: .steps,
+                    value: context.isStale ? "--" : "\(context.state.stepCount)",
+                    context: .liveActivity,
+                    inlineHeader: true
+                )
             } minimal: {
                 WalkerIcon(size: 20, style: .circle)
             }
@@ -56,7 +54,7 @@ private struct TrackingLiveActivityView: View {
     let groupName: String
     let startedAt: Date
     let stepCount: Int
-    let lastStepRefreshAt: Date?
+    let isStale: Bool
 
     var body: some View {
         HStack(spacing: 16) {
@@ -79,37 +77,16 @@ private struct TrackingLiveActivityView: View {
                     context: .liveActivity,
                     timerStartedAt: startedAt
                 )
-                TimelineView(.explicit(staleDates(for: lastStepRefreshAt))) { _ in
-                    TrackingMetric(
-                        type: .steps,
-                        value: formattedStepValue(stepCount: stepCount, lastStepRefreshAt: lastStepRefreshAt),
-                        context: .liveActivity
-                    )
-                }
+                TrackingMetric(
+                    type: .steps,
+                    value: isStale ? "--" : "\(stepCount)",
+                    context: .liveActivity
+                )
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
     }
-}
-
-private let stepFreshnessWindow: TimeInterval = 10
-
-private func staleDates(for lastStepRefreshAt: Date?) -> [Date] {
-    guard let last = lastStepRefreshAt,
-          Date().timeIntervalSince(last) <= stepFreshnessWindow else {
-        return []
-    }
-    return [last.addingTimeInterval(stepFreshnessWindow)]
-}
-
-private func formattedStepValue(stepCount: Int, lastStepRefreshAt: Date?) -> String {
-    guard let lastStepRefreshAt,
-          Date().timeIntervalSince(lastStepRefreshAt) <= stepFreshnessWindow else {
-        return "--"
-    }
-
-    return "\(stepCount)"
 }
 
 private struct GroupNameText: View {
@@ -134,7 +111,7 @@ extension TrackingActivityAttributes {
 
 extension TrackingActivityAttributes.ContentState {
     fileprivate static var preview: TrackingActivityAttributes.ContentState {
-        TrackingActivityAttributes.ContentState(elapsedSeconds: 300, stepCount: 1247, lastStepRefreshAt: .now)
+        TrackingActivityAttributes.ContentState(elapsedSeconds: 300, stepCount: 1247)
     }
 }
 

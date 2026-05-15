@@ -184,8 +184,7 @@ struct TrackingView: View {
         )
         let initialState = TrackingActivityAttributes.ContentState(
             elapsedSeconds: 0,
-            stepCount: 0,
-            lastStepRefreshAt: .now
+            stepCount: 0
         )
 
         do {
@@ -203,16 +202,15 @@ struct TrackingView: View {
         currentActivity = Activity<TrackingActivityAttributes>.activities.first
     }
 
-    private func updateLiveActivity(elapsed: Int, steps: Int, refreshedAt: Date = .now) {
+    private func updateLiveActivity(elapsed: Int, steps: Int) {
         guard currentActivity != nil else { return }
         let updatedState = TrackingActivityAttributes.ContentState(
             elapsedSeconds: elapsed,
-            stepCount: steps,
-            lastStepRefreshAt: refreshedAt
+            stepCount: steps
         )
 
         Task {
-            await currentActivity?.update(.init(state: updatedState, staleDate: nil))
+            await currentActivity?.update(.init(state: updatedState, staleDate: Date().addingTimeInterval(10)))
         }
     }
 

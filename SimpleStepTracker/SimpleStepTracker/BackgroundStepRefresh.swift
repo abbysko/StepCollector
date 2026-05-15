@@ -52,8 +52,7 @@ enum BackgroundStepRefresh {
 
         let refreshedState = TrackingActivityAttributes.ContentState(
             elapsedSeconds: elapsedSeconds,
-            stepCount: stepCount,
-            lastStepRefreshAt: now
+            stepCount: stepCount
         )
 
         await activity.update(.init(state: refreshedState, staleDate: nil))

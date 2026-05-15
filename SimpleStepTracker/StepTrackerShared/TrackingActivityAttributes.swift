@@ -12,12 +12,10 @@ public struct TrackingActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         public var elapsedSeconds: Int
         public var stepCount: Int
-        public var lastStepRefreshAt: Date?
 
-        public init(elapsedSeconds: Int, stepCount: Int, lastStepRefreshAt: Date? = nil) {
+        public init(elapsedSeconds: Int, stepCount: Int) {
             self.elapsedSeconds = elapsedSeconds
             self.stepCount = stepCount
-            self.lastStepRefreshAt = lastStepRefreshAt
         }
     }
 
