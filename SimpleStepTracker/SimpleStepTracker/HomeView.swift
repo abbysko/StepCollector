@@ -57,6 +57,23 @@ struct HomeView: View {
         .task {
             if walkGroups.isEmpty {
                 let defaultGroup = WalkGroup(name: "My Walks")
+                let sampleSessions: [(daysAgo: Int, duration: TimeInterval, steps: Int)] = [
+                    (1,  2700, 2843),
+                    (2,  3960, 4102),
+                    (3,  1800, 2011),
+                    (5,  4500, 4987),
+                    (7,  2340, 2556),
+                    (8,  3120, 3401),
+                    (10, 1980, 2200),
+                    (12, 4200, 4631),
+                    (14, 2520, 2788),
+                    (15, 3780, 3953),
+                ]
+                let now = Date()
+                for entry in sampleSessions {
+                    let start = Calendar.current.date(byAdding: .day, value: -entry.daysAgo, to: now) ?? now
+                    defaultGroup.sessions.append(WalkSession(start: start, duration: entry.duration, stepCount: entry.steps))
+                }
                 modelContext.insert(defaultGroup)
                 selectedGroup = defaultGroup
             } else if selectedGroup == nil {
