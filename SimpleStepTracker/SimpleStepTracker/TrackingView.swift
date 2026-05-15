@@ -10,6 +10,7 @@ import ActivityKit
 import StepTrackerShared
 
 struct TrackingView: View {
+    @Environment(\.scenePhase) private var scenePhase
     
     @Binding var startTime: Date?
     @Binding var isPaused: Bool
@@ -50,7 +51,12 @@ struct TrackingView: View {
         }
         .padding()
         .onAppear {
-            syncExistingLiveActivity()
+            refreshOnForegroundIfNeeded()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                refreshOnForegroundIfNeeded()
+            }
         }
     }
     
@@ -212,6 +218,19 @@ struct TrackingView: View {
         Task {
             await currentActivity?.update(.init(state: updatedState, staleDate: Date().addingTimeInterval(30)))
         }
+    }
+
+    private func refreshOnForegroundIfNeeded() {
+        guard let start = startTime, !isPaused else { return }
+
+        syncExistingLiveActivity()
+
+        if !stepTracker.isRunning {
+            startPedometerUpdates(from: start)
+        }
+
+        let elapsed = Int(Date().timeIntervalSince(start))
+        updateLiveActivity(elapsed: elapsed, steps: stepTracker.currentStepCount)
     }
 
     private func endLiveActivity() {
