@@ -36,12 +36,14 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
                     GroupNameText(context.attributes.groupName)
                 }
             } compactTrailing: {
-                TrackingMetric(
-                    type: .steps,
-                    value: formattedStepValue(stepCount: context.state.stepCount, lastStepRefreshAt: context.state.lastStepRefreshAt),
-                    context: .liveActivity,
-                    inlineHeader: true
-                )
+                TimelineView(.explicit(staleDates(for: context.state.lastStepRefreshAt))) { _ in
+                    TrackingMetric(
+                        type: .steps,
+                        value: formattedStepValue(stepCount: context.state.stepCount, lastStepRefreshAt: context.state.lastStepRefreshAt),
+                        context: .liveActivity,
+                        inlineHeader: true
+                    )
+                }
             } minimal: {
                 WalkerIcon(size: 20, style: .circle)
             }
@@ -77,11 +79,13 @@ private struct TrackingLiveActivityView: View {
                     context: .liveActivity,
                     timerStartedAt: startedAt
                 )
-                TrackingMetric(
-                    type: .steps,
-                    value: formattedStepValue(stepCount: stepCount, lastStepRefreshAt: lastStepRefreshAt),
-                    context: .liveActivity
-                )
+                TimelineView(.explicit(staleDates(for: lastStepRefreshAt))) { _ in
+                    TrackingMetric(
+                        type: .steps,
+                        value: formattedStepValue(stepCount: stepCount, lastStepRefreshAt: lastStepRefreshAt),
+                        context: .liveActivity
+                    )
+                }
             }
         }
         .padding(.horizontal, 16)
@@ -90,6 +94,14 @@ private struct TrackingLiveActivityView: View {
 }
 
 private let stepFreshnessWindow: TimeInterval = 10
+
+private func staleDates(for lastStepRefreshAt: Date?) -> [Date] {
+    guard let last = lastStepRefreshAt,
+          Date().timeIntervalSince(last) <= stepFreshnessWindow else {
+        return []
+    }
+    return [last.addingTimeInterval(stepFreshnessWindow)]
+}
 
 private func formattedStepValue(stepCount: Int, lastStepRefreshAt: Date?) -> String {
     guard let lastStepRefreshAt,
