@@ -10,6 +10,7 @@
   --radius-lg: 20px;
   --radius-md: 14px;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --highlight-figure-height: clamp(500px, 28vw, 320px);
 }
 
 * {
@@ -31,14 +32,29 @@ body {
 }
 
 .hero__badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #BF40A6, #2626D9);
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  padding: 0;
+  font-size: 1.8rem;
+  font-weight: 500;
   letter-spacing: 0.02em;
+}
+
+.hero__badge span {
+  background: linear-gradient(135deg, #BF40A6, #2626D9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.hero__badge-icon {
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 0.25em;
+  display: block;
 }
 
 h1 {
@@ -140,6 +156,10 @@ h1 {
 
 .card figure {
   margin: auto -18px -18px;
+  height: var(--highlight-figure-height);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   border-radius: 0;
   overflow: hidden;
   outline: none;
@@ -149,10 +169,11 @@ h1 {
 }
 
 .card figure img {
-  width: 75%;
-  max-width: 240px;
+  height: 100%;
+  width: auto;
+  max-width: none;
   display: block;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .card h3 {
