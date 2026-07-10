@@ -14,12 +14,26 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
             let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
-            TrackingLiveActivityView(
-                groupName: context.attributes.groupName,
-                startedAt: context.attributes.startedAt,
-                stepCount: stepValue
-            )
-
+            
+            if context.activityFamily == .small {
+                // WatchOS uses this .small case for its lock screen view
+                HStack(spacing: 6) {
+                    WalkerIcon(size: 36)
+                    TrackingMetric(
+                        type: .steps,
+                        value: stepValue,
+                        context: .liveActivity,
+                        inlineHeader: false
+                    )
+                }
+            } else {
+                // Standard lock screen display (e.g. for phone)
+                TrackingLiveActivityView(
+                    groupName: context.attributes.groupName,
+                    startedAt: context.attributes.startedAt,
+                    stepCount: stepValue
+                )
+            }
         } dynamicIsland: { context in
             let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
             return DynamicIsland {
@@ -47,6 +61,7 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
             }
             .keylineTint(.green)
         }
+        .supplementalActivityFamilies([.small])
     }
 }
 
