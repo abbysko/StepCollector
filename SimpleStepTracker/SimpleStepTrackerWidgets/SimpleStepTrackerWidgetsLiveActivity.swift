@@ -13,27 +13,7 @@ import StepTrackerShared
 struct SimpleStepTrackerWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
-            let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
-            
-            if context.activityFamily == .small {
-                // WatchOS uses this .small case for its lock screen view
-                HStack(spacing: 6) {
-                    WalkerIcon(size: 36)
-                    TrackingMetric(
-                        type: .steps,
-                        value: stepValue,
-                        context: .liveActivity,
-                        inlineHeader: false
-                    )
-                }
-            } else {
-                // Standard lock screen display (e.g. for phone)
-                TrackingLiveActivityView(
-                    groupName: context.attributes.groupName,
-                    startedAt: context.attributes.startedAt,
-                    stepCount: stepValue
-                )
-            }
+            TrackingActivityContent(context: context)
         } dynamicIsland: { context in
             let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
             return DynamicIsland {
@@ -62,6 +42,35 @@ struct SimpleStepTrackerWidgetsLiveActivity: Widget {
             .keylineTint(.green)
         }
         .supplementalActivityFamilies([.small])
+    }
+}
+
+private struct TrackingActivityContent: View {
+    let context: ActivityViewContext<TrackingActivityAttributes>
+    @Environment(\.activityFamily) private var activityFamily
+
+    private var stepValue: String {
+        context.isStale ? "--" : "\(context.state.stepCount)"
+    }
+
+    var body: some View {
+        if activityFamily == .small {
+            HStack(spacing: 6) {
+                WalkerIcon(size: 36)
+                TrackingMetric(
+                    type: .steps,
+                    value: stepValue,
+                    context: .liveActivity,
+                    inlineHeader: false
+                )
+            }
+        } else {
+            TrackingLiveActivityView(
+                groupName: context.attributes.groupName,
+                startedAt: context.attributes.startedAt,
+                stepCount: stepValue
+            )
+        }
     }
 }
 
