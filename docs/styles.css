@@ -155,7 +155,11 @@ h1 {
 }
 
 .card figure {
-  margin: auto -18px -18px;
+  margin-top: auto;
+  margin-right: -18px;
+  margin-bottom: -18px;
+  margin-left: -18px;
+  padding-bottom: 20px;
   height: var(--highlight-figure-height);
   display: flex;
   align-items: flex-end;
