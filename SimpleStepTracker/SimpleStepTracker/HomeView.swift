@@ -56,7 +56,7 @@ struct HomeView: View {
         }
         .task {
             if walkGroups.isEmpty {
-                let defaultGroup = WalkGroup(name: "My Walks")
+                let defaultGroup = WalkGroup(name: "Demo Walks")
                 let sampleSessions: [(daysAgo: Int, duration: TimeInterval, steps: Int)] = [
                     (1,  2700, 2843),
                     (2,  3960, 4102),
