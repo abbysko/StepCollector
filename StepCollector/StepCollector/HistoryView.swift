@@ -130,6 +130,23 @@ struct HistoryView: View {
             PointMark(x: .value("Time", point.time), y: .value(yLabel, yValue))
         }
         .chartXScale(domain: visibleDateDomain)
+        .chartOverlay { _ in
+            VStack(alignment: .leading, spacing: 2) {
+                Text(displayType == .duration ? "Total time" : "Total steps")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text(totalCumulativeValueText)
+                    .font(.headline)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.top, 8)
+            .padding(.leading, 8)
+            .allowsHitTesting(false)
+        }
         .frame(height: 220)
         .padding(.horizontal)
         .chartXAxis {
@@ -273,6 +290,18 @@ struct HistoryView: View {
 
         let averageSteps = Double(displayedDailyTotals.reduce(0) { $0 + $1.totalSteps }) / Double(displayedDailyTotals.count)
         return "\(Int(averageSteps.rounded())) steps"
+    }
+
+    private var totalCumulativeValueText: String {
+        guard let latestTotal = cumulativeTotals.last else {
+            return displayType == .duration ? "0 min" : "0 steps"
+        }
+
+        if displayType == .duration {
+            return latestTotal.cumulativeDuration.durationFormatted
+        }
+
+        return "\(latestTotal.cumulativeSteps) steps"
     }
 
     private func updateDailySelection(
