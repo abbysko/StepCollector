@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		9E97D3802FB601760042D966 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D37F2FB601760042D966 /* WidgetKit.framework */; };
 		9E97D3822FB601760042D966 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D3812FB601760042D966 /* SwiftUI.framework */; };
-		9E97D38F2FB601790042D966 /* SimpleStepTrackerWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9E97D37D2FB601760042D966 /* SimpleStepTrackerWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9E97D38F2FB601790042D966 /* StepCollectorWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9E97D37D2FB601760042D966 /* StepCollectorWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9E97D3A22FB6086D0042D966 /* StepTrackerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; };
 		9E97D3A32FB6086D0042D966 /* StepTrackerShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9E97D3AA2FB608CA0042D966 /* StepTrackerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; };
@@ -22,7 +22,7 @@
 			containerPortal = 9E97D1BC2F8D61B70042D966 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 9E97D37C2FB601760042D966;
-			remoteInfo = SimpleStepTrackerWidgetsExtension;
+			remoteInfo = StepCollectorWidgetsExtension;
 		};
 		9E97D3A02FB6086D0042D966 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -47,7 +47,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				9E97D38F2FB601790042D966 /* SimpleStepTrackerWidgetsExtension.appex in Embed Foundation Extensions */,
+				9E97D38F2FB601790042D966 /* StepCollectorWidgetsExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,60 +77,60 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9E97D1C42F8D61B70042D966 /* SimpleStepTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleStepTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9E97D37D2FB601760042D966 /* SimpleStepTrackerWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SimpleStepTrackerWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E97D1C42F8D61B70042D966 /* StepCollector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepCollector.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E97D37D2FB601760042D966 /* StepCollectorWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepCollectorWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E97D37F2FB601760042D966 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9E97D3812FB601760042D966 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StepTrackerShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9E97D3932FB601790042D966 /* Exceptions for "SimpleStepTrackerWidgets" folder in "SimpleStepTrackerWidgetsExtension" target */ = {
+		9E97D3932FB601790042D966 /* Exceptions for "StepCollectorWidgets" folder in "StepCollectorWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 9E97D37C2FB601760042D966 /* SimpleStepTrackerWidgetsExtension */;
+			target = 9E97D37C2FB601760042D966 /* StepCollectorWidgetsExtension */;
 		};
-		9E97D3AF2FB700000042D966 /* Exceptions for "SimpleStepTracker" folder in "SimpleStepTracker" target */ = {
+		9E97D3AF2FB700000042D966 /* Exceptions for "StepCollector" folder in "StepCollector" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 9E97D1C32F8D61B70042D966 /* SimpleStepTracker */;
+			target = 9E97D1C32F8D61B70042D966 /* StepCollector */;
 		};
-		9E97D3A82FB608930042D966 /* Exceptions for "StepTrackerShared" folder in "SimpleStepTracker" target */ = {
+		9E97D3A82FB608930042D966 /* Exceptions for "StepCollectorShared" folder in "StepCollector" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WalkerIcon.swift,
 			);
-			target = 9E97D1C32F8D61B70042D966 /* SimpleStepTracker */;
+			target = 9E97D1C32F8D61B70042D966 /* StepCollector */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9E97D1C62F8D61B70042D966 /* SimpleStepTracker */ = {
+		9E97D1C62F8D61B70042D966 /* StepCollector */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9E97D3AF2FB700000042D966 /* Exceptions for "SimpleStepTracker" folder in "SimpleStepTracker" target */,
+				9E97D3AF2FB700000042D966 /* Exceptions for "StepCollector" folder in "StepCollector" target */,
 			);
-			path = SimpleStepTracker;
+			path = StepCollector;
 			sourceTree = "<group>";
 		};
-		9E97D3832FB601760042D966 /* SimpleStepTrackerWidgets */ = {
+		9E97D3832FB601760042D966 /* StepCollectorWidgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9E97D3932FB601790042D966 /* Exceptions for "SimpleStepTrackerWidgets" folder in "SimpleStepTrackerWidgetsExtension" target */,
+				9E97D3932FB601790042D966 /* Exceptions for "StepCollectorWidgets" folder in "StepCollectorWidgetsExtension" target */,
 			);
-			path = SimpleStepTrackerWidgets;
+			path = StepCollectorWidgets;
 			sourceTree = "<group>";
 		};
-		9E97D39B2FB6086B0042D966 /* StepTrackerShared */ = {
+		9E97D39B2FB6086B0042D966 /* StepCollectorShared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9E97D3A82FB608930042D966 /* Exceptions for "StepTrackerShared" folder in "SimpleStepTracker" target */,
+				9E97D3A82FB608930042D966 /* Exceptions for "StepCollectorShared" folder in "StepCollector" target */,
 			);
-			path = StepTrackerShared;
+			path = StepCollectorShared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -167,9 +167,9 @@
 		9E97D1BB2F8D61B70042D966 = {
 			isa = PBXGroup;
 			children = (
-				9E97D1C62F8D61B70042D966 /* SimpleStepTracker */,
-				9E97D3832FB601760042D966 /* SimpleStepTrackerWidgets */,
-				9E97D39B2FB6086B0042D966 /* StepTrackerShared */,
+				9E97D1C62F8D61B70042D966 /* StepCollector */,
+				9E97D3832FB601760042D966 /* StepCollectorWidgets */,
+				9E97D39B2FB6086B0042D966 /* StepCollectorShared */,
 				9E97D37E2FB601760042D966 /* Frameworks */,
 				9E97D1C52F8D61B70042D966 /* Products */,
 			);
@@ -178,8 +178,8 @@
 		9E97D1C52F8D61B70042D966 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9E97D1C42F8D61B70042D966 /* SimpleStepTracker.app */,
-				9E97D37D2FB601760042D966 /* SimpleStepTrackerWidgetsExtension.appex */,
+				9E97D1C42F8D61B70042D966 /* StepCollector.app */,
+				9E97D37D2FB601760042D966 /* StepCollectorWidgetsExtension.appex */,
 				9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */,
 			);
 			name = Products;
@@ -207,9 +207,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		9E97D1C32F8D61B70042D966 /* SimpleStepTracker */ = {
+		9E97D1C32F8D61B70042D966 /* StepCollector */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E97D1CF2F8D61B90042D966 /* Build configuration list for PBXNativeTarget "SimpleStepTracker" */;
+			buildConfigurationList = 9E97D1CF2F8D61B90042D966 /* Build configuration list for PBXNativeTarget "StepCollector" */;
 			buildPhases = (
 				9E97D1C02F8D61B70042D966 /* Sources */,
 				9E97D1C12F8D61B70042D966 /* Frameworks */,
@@ -224,18 +224,18 @@
 				9E97D3A12FB6086D0042D966 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				9E97D1C62F8D61B70042D966 /* SimpleStepTracker */,
+				9E97D1C62F8D61B70042D966 /* StepCollector */,
 			);
-			name = SimpleStepTracker;
+			name = StepCollector;
 			packageProductDependencies = (
 			);
-			productName = SimpleStepTracker;
-			productReference = 9E97D1C42F8D61B70042D966 /* SimpleStepTracker.app */;
+			productName = StepCollector;
+			productReference = 9E97D1C42F8D61B70042D966 /* StepCollector.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9E97D37C2FB601760042D966 /* SimpleStepTrackerWidgetsExtension */ = {
+		9E97D37C2FB601760042D966 /* StepCollectorWidgetsExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9E97D3942FB601790042D966 /* Build configuration list for PBXNativeTarget "SimpleStepTrackerWidgetsExtension" */;
+			buildConfigurationList = 9E97D3942FB601790042D966 /* Build configuration list for PBXNativeTarget "StepCollectorWidgetsExtension" */;
 			buildPhases = (
 				9E97D3792FB601760042D966 /* Sources */,
 				9E97D37A2FB601760042D966 /* Frameworks */,
@@ -248,13 +248,13 @@
 				9E97D3AD2FB608CA0042D966 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				9E97D3832FB601760042D966 /* SimpleStepTrackerWidgets */,
+				9E97D3832FB601760042D966 /* StepCollectorWidgets */,
 			);
-			name = SimpleStepTrackerWidgetsExtension;
+			name = StepCollectorWidgetsExtension;
 			packageProductDependencies = (
 			);
-			productName = SimpleStepTrackerWidgetsExtension;
-			productReference = 9E97D37D2FB601760042D966 /* SimpleStepTrackerWidgetsExtension.appex */;
+			productName = StepCollectorWidgetsExtension;
+			productReference = 9E97D37D2FB601760042D966 /* StepCollectorWidgetsExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		9E97D3992FB6086B0042D966 /* StepTrackerShared */ = {
@@ -271,7 +271,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				9E97D39B2FB6086B0042D966 /* StepTrackerShared */,
+				9E97D39B2FB6086B0042D966 /* StepCollectorShared */,
 			);
 			name = StepTrackerShared;
 			packageProductDependencies = (
@@ -301,7 +301,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9E97D1BF2F8D61B70042D966 /* Build configuration list for PBXProject "SimpleStepTracker" */;
+			buildConfigurationList = 9E97D1BF2F8D61B70042D966 /* Build configuration list for PBXProject "StepCollector" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -315,8 +315,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9E97D1C32F8D61B70042D966 /* SimpleStepTracker */,
-				9E97D37C2FB601760042D966 /* SimpleStepTrackerWidgetsExtension */,
+				9E97D1C32F8D61B70042D966 /* StepCollector */,
+				9E97D37C2FB601760042D966 /* StepCollectorWidgetsExtension */,
 				9E97D3992FB6086B0042D966 /* StepTrackerShared */,
 			);
 		};
@@ -373,7 +373,7 @@
 /* Begin PBXTargetDependency section */
 		9E97D38E2FB601790042D966 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 9E97D37C2FB601760042D966 /* SimpleStepTrackerWidgetsExtension */;
+			target = 9E97D37C2FB601760042D966 /* StepCollectorWidgetsExtension */;
 			targetProxy = 9E97D38D2FB601790042D966 /* PBXContainerItemProxy */;
 		};
 		9E97D3A12FB6086D0042D966 /* PBXTargetDependency */ = {
@@ -520,7 +520,7 @@
 				DEVELOPMENT_TEAM = RD62BPSB6B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SimpleStepTracker/Info.plist;
+				INFOPLIST_FILE = StepCollector/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -549,7 +549,7 @@
 				DEVELOPMENT_TEAM = RD62BPSB6B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SimpleStepTracker/Info.plist;
+				INFOPLIST_FILE = StepCollector/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -577,8 +577,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD62BPSB6B;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleStepTrackerWidgets/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SimpleStepTrackerWidgets;
+				INFOPLIST_FILE = StepCollectorWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Step Collector Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -607,8 +607,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RD62BPSB6B;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleStepTrackerWidgets/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SimpleStepTrackerWidgets;
+				INFOPLIST_FILE = StepCollectorWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Step Collector Widgets";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -709,7 +709,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9E97D1BF2F8D61B70042D966 /* Build configuration list for PBXProject "SimpleStepTracker" */ = {
+		9E97D1BF2F8D61B70042D966 /* Build configuration list for PBXProject "StepCollector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9E97D1CD2F8D61B90042D966 /* Debug */,
@@ -718,7 +718,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9E97D1CF2F8D61B90042D966 /* Build configuration list for PBXNativeTarget "SimpleStepTracker" */ = {
+		9E97D1CF2F8D61B90042D966 /* Build configuration list for PBXNativeTarget "StepCollector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9E97D1D02F8D61B90042D966 /* Debug */,
@@ -727,7 +727,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9E97D3942FB601790042D966 /* Build configuration list for PBXNativeTarget "SimpleStepTrackerWidgetsExtension" */ = {
+		9E97D3942FB601790042D966 /* Build configuration list for PBXNativeTarget "StepCollectorWidgetsExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9E97D3912FB601790042D966 /* Debug */,

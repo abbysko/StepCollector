@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9E97D1C32F8D61B70042D966"
-               BuildableName = "SimpleStepTracker.app"
-               BlueprintName = "SimpleStepTracker"
-               ReferencedContainer = "container:SimpleStepTracker.xcodeproj">
+               BuildableName = "StepCollector.app"
+               BlueprintName = "StepCollector"
+               ReferencedContainer = "container:StepCollector.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9E97D1C32F8D61B70042D966"
-            BuildableName = "SimpleStepTracker.app"
-            BlueprintName = "SimpleStepTracker"
-            ReferencedContainer = "container:SimpleStepTracker.xcodeproj">
+            BuildableName = "StepCollector.app"
+            BlueprintName = "StepCollector"
+            ReferencedContainer = "container:StepCollector.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9E97D1C32F8D61B70042D966"
-            BuildableName = "SimpleStepTracker.app"
-            BlueprintName = "SimpleStepTracker"
-            ReferencedContainer = "container:SimpleStepTracker.xcodeproj">
+            BuildableName = "StepCollector.app"
+            BlueprintName = "StepCollector"
+            ReferencedContainer = "container:StepCollector.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -1,6 +1,6 @@
 //
 //  BackgroundStepRefresh.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 5/14/26.
 //
@@ -11,7 +11,7 @@ import BackgroundTasks
 import StepTrackerShared
 
 enum BackgroundStepRefresh {
-    static let taskIdentifier = "com.abbysko.SimpleStepTracker.stepRefresh"
+    static let taskIdentifier = "com.abbysko.StepCollector.stepRefresh"
 
     static func schedule() {
         guard !Activity<TrackingActivityAttributes>.activities.isEmpty else {

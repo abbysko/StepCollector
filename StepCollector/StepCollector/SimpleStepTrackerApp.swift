@@ -1,6 +1,6 @@
 //
 //  SimpleStepTrackerApp.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 4/13/26.
 //
@@ -10,7 +10,7 @@ import SwiftData
 import BackgroundTasks
 
 @main
-struct SimpleStepTrackerApp: App {
+struct StepCollectorApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {

@@ -1,6 +1,6 @@
 //
 //  SimpleStepTrackerWidgetsBundle.swift
-//  SimpleStepTrackerWidgets
+//  Step Collector Widgets
 //
 //  Created by Abigail Skofield on 5/14/26.
 //
@@ -9,8 +9,8 @@ import WidgetKit
 import SwiftUI
 
 @main
-struct SimpleStepTrackerWidgetsBundle: WidgetBundle {
+struct StepCollectorWidgetsBundle: WidgetBundle {
     var body: some Widget {
-        SimpleStepTrackerWidgetsLiveActivity()
+        StepCollectorWidgetsLiveActivity()
     }
 }

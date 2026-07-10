@@ -1,6 +1,6 @@
-# SimpleStepTracker
+# Step Collector
 
-SimpleStepTracker is an iOS app that lets you log and review your walks across named groups — great for separating different walking contexts like commutes, hikes, or exercise. Track live step counts and elapsed time during a session, then browse cumulative and daily charts of your history. Built with SwiftUI and SwiftData for a simple fully local, no-account experience.
+Step Collector is an iOS app that lets you log and review your walks across named groups — great for separating different walking contexts like commutes, hikes, or exercise. Track live step counts and elapsed time during a session, then browse cumulative and daily charts of your history. Built with SwiftUI and SwiftData for a simple fully local, no-account experience.
 
 ## App UI Overview
 

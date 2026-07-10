@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>SimpleStepTracker</string>
+	<string>Step Collector</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,10 +22,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.abbysko.SimpleStepTracker.stepRefresh</string>
+		<string>com.abbysko.StepCollector.stepRefresh</string>
 	</array>
 	<key>NSMotionUsageDescription</key>
-	<string>SimpleStepTracker uses Motion &amp; Fitness to show live step counts while you walk.</string>
+	<string>Step Collector uses Motion &amp; Fitness to show live step counts while you walk.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>NSSupportsLiveActivitiesFrequentUpdates</key>

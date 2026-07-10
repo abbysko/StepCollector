@@ -1,6 +1,6 @@
 //
 //  SimpleStepTrackerWidgetsLiveActivity.swift
-//  SimpleStepTrackerWidgets
+//  Step Collector Widgets
 //
 //  Created by Abigail Skofield on 5/14/26.
 //
@@ -10,7 +10,7 @@ import WidgetKit
 import SwiftUI
 import StepTrackerShared
 
-struct SimpleStepTrackerWidgetsLiveActivity: Widget {
+struct StepCollectorWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
             TrackingActivityContent(context: context)
@@ -139,25 +139,25 @@ extension TrackingActivityAttributes.ContentState {
 }
 
 #Preview("Lock Screen", as: .content, using: TrackingActivityAttributes.preview) {
-   SimpleStepTrackerWidgetsLiveActivity()
+   StepCollectorWidgetsLiveActivity()
 } contentStates: {
     TrackingActivityAttributes.ContentState.preview
 }
 
 #Preview("DI Expanded", as: .dynamicIsland(.expanded), using: TrackingActivityAttributes.preview) {
-   SimpleStepTrackerWidgetsLiveActivity()
+   StepCollectorWidgetsLiveActivity()
 } contentStates: {
     TrackingActivityAttributes.ContentState.preview
 }
 
 #Preview("DI Compact", as: .dynamicIsland(.compact), using: TrackingActivityAttributes.preview) {
-   SimpleStepTrackerWidgetsLiveActivity()
+   StepCollectorWidgetsLiveActivity()
 } contentStates: {
     TrackingActivityAttributes.ContentState.preview
 }
 
 #Preview("DI Minimal", as: .dynamicIsland(.minimal), using: TrackingActivityAttributes.preview) {
-   SimpleStepTrackerWidgetsLiveActivity()
+   StepCollectorWidgetsLiveActivity()
 } contentStates: {
     TrackingActivityAttributes.ContentState.preview
 }
