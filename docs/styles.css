@@ -45,7 +45,7 @@ h1 {
   font-size: clamp(2rem, 3.5vw, 3.5rem);
   line-height: 1.1;
   margin: 14px 0;
-  max-width: 14ch;
+  max-width: 18ch;
 }
 
 .hero p {
@@ -84,6 +84,19 @@ h1 {
   background: var(--surface);
 }
 
+.btn--appstore {
+  padding: 0;
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.9;
+}
+
+.btn--appstore:hover {
+  opacity: 1;
+}
+
 .section {
   max-width: 1080px;
   margin: 0 auto;
@@ -99,7 +112,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .feature {
@@ -121,10 +134,12 @@ h1 {
   padding: 18px;
   box-shadow: var(--shadow);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .card figure {
-  margin: 14px -18px -18px;
+  margin: auto -18px -18px;
   border-radius: 0;
   overflow: hidden;
   outline: none;
