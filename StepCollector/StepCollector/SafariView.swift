@@ -60,18 +60,6 @@ struct WebView: UIViewRepresentable {
                 return false
             }
 
-            // Keep in-page anchor links (e.g. #privacy) inside the embedded web view.
-            if url.fragment != nil,
-               let host = url.host?.lowercased(),
-               let rootHost = rootURL.host?.lowercased(),
-               host == rootHost {
-                let rootPath = rootURL.path.hasSuffix("/") ? rootURL.path : rootURL.path + "/"
-                let requestedPath = url.path
-                if requestedPath.hasPrefix(rootPath) {
-                    return false
-                }
-            }
-
             guard let scheme = url.scheme?.lowercased() else {
                 return true
             }
@@ -89,9 +77,22 @@ struct WebView: UIViewRepresentable {
                 return true
             }
 
-            let rootPath = rootURL.path.hasSuffix("/") ? rootURL.path : rootURL.path + "/"
-            let requestedPath = url.path
-            return !requestedPath.hasPrefix(rootPath)
+            let normalizedRootPath = normalizedPath(rootURL.path)
+            let normalizedRequestedPath = normalizedPath(url.path)
+
+            if normalizedRequestedPath == normalizedRootPath {
+                return false
+            }
+
+            return !normalizedRequestedPath.hasPrefix(normalizedRootPath + "/")
+        }
+
+        private func normalizedPath(_ path: String) -> String {
+            if path.isEmpty || path == "/" {
+                return "/"
+            }
+
+            return path.hasSuffix("/") ? String(path.dropLast()) : path
         }
     }
 }
