@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 4/13/26.
 //
@@ -17,7 +17,7 @@ struct ContentView: View {
     @State private var selectedGroup: WalkGroup? = nil
     @State private var selectedTab: Tab = .home
 
-    private let aboutURL = URL(string: "https://abbysko.github.io/SimpleStepTracker/")!
+    private let aboutURL = URL(string: "https://abbysko.github.io/StepCollector/")!
 
     init(previewGroup: WalkGroup? = nil) {
         _selectedGroup = State(initialValue: previewGroup)

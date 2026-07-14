@@ -234,6 +234,25 @@ figcaption {
   color: var(--muted);
 }
 
+.section-copy {
+  padding-top: 0;
+}
+
+.section-copy p {
+  color: var(--muted);
+}
+
+.section-copy a {
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.section-copy__cta {
+  display: inline-block;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
 .privacy {
   background: #21292b;
   border: 1px solid var(--border);
@@ -270,11 +289,6 @@ figcaption {
 }
 
 .footer a {
-  color: var(--accent-strong);
-  text-decoration: none;
-}
-
-.privacy a {
   color: var(--accent-strong);
   text-decoration: none;
 }

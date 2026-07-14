@@ -1,6 +1,6 @@
 //
 //  DataModels.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 4/16/26.
 //

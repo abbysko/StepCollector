@@ -1,6 +1,6 @@
 //
 //  HistoryView.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 4/15/26.
 //

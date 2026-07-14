@@ -1,6 +1,6 @@
 //
 //  WalkerIcon.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 5/14/26.
 //

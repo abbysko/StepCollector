@@ -1,6 +1,6 @@
 //
 //  SafariView.swift
-//  SimpleStepTracker
+//  Step Collector
 //
 //  Created by Abigail Skofield on 7/14/26.
 //
