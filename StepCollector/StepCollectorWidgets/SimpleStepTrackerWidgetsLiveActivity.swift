@@ -13,7 +13,13 @@ import StepTrackerShared
 struct StepCollectorWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackingActivityAttributes.self) { context in
-            TrackingActivityContent(context: context)
+            let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
+
+            TrackingActivityLockScreenContent(
+                groupName: context.attributes.groupName,
+                startedAt: context.attributes.startedAt,
+                stepCount: stepValue
+            )
         } dynamicIsland: { context in
             let stepValue = context.isStale ? "--" : "\(context.state.stepCount)"
             return DynamicIsland {
@@ -45,13 +51,12 @@ struct StepCollectorWidgetsLiveActivity: Widget {
     }
 }
 
-private struct TrackingActivityContent: View {
-    let context: ActivityViewContext<TrackingActivityAttributes>
+private struct TrackingActivityLockScreenContent: View {
     @Environment(\.activityFamily) private var activityFamily
 
-    private var stepValue: String {
-        context.isStale ? "--" : "\(context.state.stepCount)"
-    }
+    let groupName: String
+    let startedAt: Date
+    let stepCount: String
 
     var body: some View {
         if activityFamily == .small {
@@ -59,16 +64,16 @@ private struct TrackingActivityContent: View {
                 WalkerIcon(size: 36)
                 TrackingMetric(
                     type: .steps,
-                    value: stepValue,
+                    value: stepCount,
                     context: .liveActivity,
                     inlineHeader: false
                 )
             }
         } else {
             TrackingLiveActivityView(
-                groupName: context.attributes.groupName,
-                startedAt: context.attributes.startedAt,
-                stepCount: stepValue
+                groupName: groupName,
+                startedAt: startedAt,
+                stepCount: stepCount
             )
         }
     }
