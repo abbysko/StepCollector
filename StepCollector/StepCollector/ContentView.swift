@@ -10,31 +10,39 @@ import SwiftData
 import StepTrackerShared
 
 struct ContentView: View {
+    @Environment(\.openURL) private var openURL
+
     @State private var isPaused = false
     @State private var startTime: Date? = nil
     @State private var selectedGroup: WalkGroup? = nil
     @State private var selectedTab: Tab = .home
+
+    private let aboutURL = URL(string: "https://abbysko.github.io/SimpleStepTracker/")!
 
     init(previewGroup: WalkGroup? = nil) {
         _selectedGroup = State(initialValue: previewGroup)
     }
 
     enum Tab: Hashable {
-        case home, track, history
+        case home, track, history, about
 
         var title: String {
             switch self {
             case .home: return "Home"
             case .track: return "Track Steps"
             case .history: return "History"
+            case .about: return "About"
             }
         }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            appHeader
-            Divider()
+            if selectedTab != .about {
+                appHeader
+                Divider()
+            }
+
             TabView(selection: $selectedTab) {
                 homeTabView
                     .tag(Tab.home)
@@ -48,6 +56,10 @@ struct ContentView: View {
                 historyTabView
                     .tag(Tab.history)
                     .tabItem { Label("History", systemImage: "chart.line.uptrend.xyaxis") }
+
+                aboutTabView
+                    .tag(Tab.about)
+                    .tabItem { Label("About", systemImage: "info.circle") }
             }
         }
     }
@@ -86,6 +98,30 @@ struct ContentView: View {
 
     private var historyTabView: some View {
         HistoryView(selectedGroup: $selectedGroup)
+    }
+
+    private var aboutTabView: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                Button {
+                    openURL(aboutURL)
+                } label: {
+                    Label("Open in Safari", systemImage: "safari")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.bordered)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+
+            Divider()
+
+            WebView(url: aboutURL)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
