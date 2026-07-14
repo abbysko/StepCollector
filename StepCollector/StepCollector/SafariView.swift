@@ -60,6 +60,18 @@ struct WebView: UIViewRepresentable {
                 return false
             }
 
+            // Keep in-page anchor links (e.g. #privacy) inside the embedded web view.
+            if url.fragment != nil,
+               let host = url.host?.lowercased(),
+               let rootHost = rootURL.host?.lowercased(),
+               host == rootHost {
+                let rootPath = rootURL.path.hasSuffix("/") ? rootURL.path : rootURL.path + "/"
+                let requestedPath = url.path
+                if requestedPath.hasPrefix(rootPath) {
+                    return false
+                }
+            }
+
             guard let scheme = url.scheme?.lowercased() else {
                 return true
             }
