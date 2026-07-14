@@ -45,3 +45,19 @@ The app has four tabs:
 
 - Public source: http://github.com/abbysko/StepCollector
 - Issues can be reported through GitHub issues or via the contact links on the website
+
+## Release Process (App Store + GitHub)
+
+Use this mapping for public releases:
+- App Store version `1.0` -> Git tag `v1.0.0`
+
+Checklist:
+1. Update `MARKETING_VERSION` in Xcode (for example `1.0`).
+2. Commit and push changes to `main`.
+3. Create and push the release tag:
+  - `git tag -a v1.0.0 -m "StepCollector 1.0"`
+  - `git push origin main --follow-tags`
+4. GitHub Actions runs `.github/workflows/release.yml` on tag push.
+5. Workflow validates tag version against Xcode `MARKETING_VERSION` and publishes the GitHub Release.
+
+If versions do not match, release publishing is blocked until they are aligned.
