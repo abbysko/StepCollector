@@ -13,7 +13,6 @@
 		9E97D3A22FB6086D0042D966 /* StepTrackerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; };
 		9E97D3A32FB6086D0042D966 /* StepTrackerShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9E97D3AA2FB608CA0042D966 /* StepTrackerShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; };
-		9E97D3AB2FB608CA0042D966 /* StepTrackerShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9E97D39A2FB6086B0042D966 /* StepTrackerShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,17 +62,6 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9E97D3AE2FB608CA0042D966 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				9E97D3AB2FB608CA0042D966 /* StepTrackerShared.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -92,17 +80,17 @@
 			);
 			target = 9E97D37C2FB601760042D966 /* StepCollectorWidgetsExtension */;
 		};
-		9E97D3AF2FB700000042D966 /* Exceptions for "StepCollector" folder in "StepCollector" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 9E97D1C32F8D61B70042D966 /* StepCollector */;
-		};
 		9E97D3A82FB608930042D966 /* Exceptions for "StepCollectorShared" folder in "StepCollector" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WalkerIcon.swift,
+			);
+			target = 9E97D1C32F8D61B70042D966 /* StepCollector */;
+		};
+		9E97D3AF2FB700000042D966 /* Exceptions for "StepCollector" folder in "StepCollector" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
 			);
 			target = 9E97D1C32F8D61B70042D966 /* StepCollector */;
 		};
@@ -240,7 +228,6 @@
 				9E97D3792FB601760042D966 /* Sources */,
 				9E97D37A2FB601760042D966 /* Frameworks */,
 				9E97D37B2FB601760042D966 /* Resources */,
-				9E97D3AE2FB608CA0042D966 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -521,6 +508,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepCollector/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Step Collector";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -550,6 +539,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepCollector/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Step Collector";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
