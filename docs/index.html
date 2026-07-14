@@ -29,6 +29,7 @@
           <img src="images/download-on-the-app-store.svg" alt="Download on the App Store" height="44">
         </a>
         <a class="btn btn--secondary" href="#privacy">Privacy Policy</a>
+        <a class="btn btn--secondary" href="#support">Support</a>
       </div>
     </header>
 
@@ -64,6 +65,38 @@
         <h2>FAQ</h2>
         <div class="faq">
           <div class="faq__item">
+            <h3>How do I add, remove, rename or switch between groups?</h3>
+            <p>In the Home tab, you can switch between existing groups by selecting them from the list. Add a new group
+              by selecting the "Add Group" item in the top right above the list. Swipe right on an existing group to 
+              access the "Delete" option. Swipe left on a group to access the "Rename" option. The number of groups
+              is limited to five. Group names are limited to 100 characters and must be unique.</p>
+          </div>
+          <div class="faq__item">
+            <h3>How do I start collecting steps?</h3>
+            <p>To start collecting steps, select a group in the Home tab and then switch to the Track tab. 
+              Tap "Start Tracking" to begin a new walk session. Your steps will be recorded in real time. The session
+              must be saved to be included in your history - end the session with the "Stop Tracking" button on
+              the Track tab and select "Save Progress" to save the session.</p>
+          </div>
+          <div class="faq__item">
+            <h3>What is the "Demo Walks" group that shows up when I install the app for the first time?</h3>
+            <p>The "Demo Walks" group is included automatically when you first install the app, or when there are no 
+              groups on your device. Select this group and switch to the History tab to explore the app's functionality. 
+              Delete this group by swiping right on the group name in the Home tab when you're done exploring.</p>
+          </div>
+          <div class="faq__item">
+            <h3>Can I remove a walk session that I no longer wish to have included in the History?</h3>
+            <p>Yes. In the History tab, switch to the List view and swipe left on any session to delete it. 
+              Deleted sessions are removed immediately and cannot be recovered.</p>
+          </div>
+          <div class="faq__item">
+            <h3>Why does the step count on the lock screen or Apple Watch sometimes show "--" or stop updating?</h3>
+            <p>iOS limits how often background updates can be delivered to the lock screen and Apple Watch to preserve battery life, 
+              so the step count only refreshes periodically even while the app is actively tracking. The "--" appears when the phone 
+              has been locked long enough that the system has paused Live Activity updates. Your steps are still being recorded — 
+              they'll be reflected as soon as you open the app.</p>
+          </div>
+          <div class="faq__item">
             <h3>Does Step Collector work without an internet connection?</h3>
             <p>Yes. Everything runs on-device — no network connection is needed to track, save, or review your walks.</p>
           </div>
@@ -83,16 +116,37 @@
               my own daily step goals, but I wanted a way to track specific walk sessions with the kids and give them a way to see 
               their progress.</p>
           </div>
-          <div class="faq__item">
-            <h3>Why does the step count on my lock screen or Apple Watch sometimes show "--" or stop updating?</h3>
-            <p>iOS limits how often background updates can be delivered to the lock screen and Apple Watch to preserve battery life, 
-              so the step count only refreshes periodically even while the app is actively tracking. The "--" appears when the phone 
-              has been locked long enough that the system has paused Live Activity updates. Your steps are still being recorded — 
-              they'll be reflected as soon as you open the app.</p>
-          </div>
         </div>
       </section>
+<section class="section get-help" id="support">
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Contact Support</h3>
+            <p>
+              If you run into a problem, please start by checking the <a href="#faq">FAQ</a> above. If you still 
+              need help, please email me with a description of the issue and your device details.
+            </p>
+            <a class="get-help__cta" href="mailto:abbyskocodes@gmail.com">Email Support &rarr;</a>
+          </article>
 
+          <article class="card">
+            <h3>Connect on GitHub</h3>
+            <p>
+              Check out the app's source code on GitHub. Feel free to submit issues if you find a bug or have a feature request.
+            </p>
+            <a class="get-help__cta" href="https://github.com/abbysko/StepCollector" target="_blank" rel="noopener noreferrer">View Repository &rarr;</a>
+          </article>
+
+          <article class="card" id="contact">
+            <h3>Connect on LinkedIn</h3>
+            <p>
+              I'm Abby Skofield, a Massachusetts-based software engineer. If you'd like to connect professionally, find me on LinkedIn.
+            </p>
+            <a class="get-help__cta" href="https://www.linkedin.com/in/abigailswain/" target="_blank" rel="noopener noreferrer">Meet Abby &rarr;</a>
+          </article>
+        </div>
+      </section>
+      
       <div class="section">
       <div class="privacy" id="privacy">
         <h2>Privacy Policy</h2>
@@ -106,40 +160,12 @@
           There are no accounts, no analytics, and no third-party SDKs. 
         </p>
         <p>
-          If this policy changes, the effective date above will be updated.
+          If this policy changes, the effective date above will be updated. For privacy questions, contact <a href="mailto:abbyskocodes@gmail.com">abbyskocodes@gmail.com</a>.
         </p>
       </div>
       </div>
 
-      <section class="section section-copy" id="support">
-        <h2>Support</h2>
-        <p>
-          Step Collector is a small independent app. If you run into a problem, the please start by 
-          checking the FAQ above. If you still need help, please email me with a description of the 
-          issue and your device details. I read all support emails, but I may not be able to respond 
-          to every request individually. 
-        </p>
-      </section>
-
-      <section class="section section-copy" id="source-code">
-        <h2>Source Code</h2>
-        <p>
-          Step Collector is also available as a public GitHub repository. If you're interested in the 
-          implementation, would like to report a bug, or simply want to see how the app was built, 
-          you can browse the source code and open issues on GitHub.
-        </p>
-        <p>
-          <a class="section-copy__cta" href="https://github.com/abbysko/StepCollector" target="_blank" rel="noopener noreferrer">View on GitHub &rarr;</a>
-        </p>
-      </section>
-
-      <section class="section section-copy" id="contact">
-        <h2>Contact</h2>
-        <p>
-          Questions, bug reports, or feature requests? Email
-          <a href="mailto:abbyskocodes@gmail.com">abbyskocodes@gmail.com</a>.
-        </p>
-      </section>
+      
     </main>
 
     <footer class="footer">
