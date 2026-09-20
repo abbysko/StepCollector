@@ -33,15 +33,27 @@ public enum MetricContext {
     
     public var fontSize: CGFloat {
         switch self {
-        case .app: 42
+        case .app: 60
         case .liveActivity: 18
         }
     }
     
     public var spacing: CGFloat {
         switch self {
-        case .app: 8
+        case .app: 10
         case .liveActivity: 2
+        }
+    }
+}
+
+public enum MetricAlignment {
+    case left
+    case center
+    
+    var horizontalAlignment: HorizontalAlignment {
+        switch self {
+        case .left: .leading
+        case .center: .center
         }
     }
 }
@@ -50,35 +62,26 @@ public struct TrackingMetric: View {
     public let type: MetricType
     public let value: String
     public let context: MetricContext
+    public let alignment: MetricAlignment
     public let inlineHeader: Bool
     public let elapsed: TimeInterval?
     public let timerStartedAt: Date?
     public let startedAt: Date?
 
-    public init(type: MetricType, value: String, context: MetricContext) {
+    public init(
+        type: MetricType,
+        value: String,
+        context: MetricContext,
+        alignment: MetricAlignment = .left,
+        inlineHeader: Bool = false,
+        elapsed: TimeInterval? = nil,
+        timerStartedAt: Date? = nil,
+        startedAt: Date? = nil
+    ) {
         self.type = type
         self.value = value
         self.context = context
-        self.inlineHeader = false
-        self.elapsed = nil
-        self.timerStartedAt = nil
-        self.startedAt = nil
-    }
-
-    public init(type: MetricType, value: String, context: MetricContext, inlineHeader: Bool = false) {
-        self.type = type
-        self.value = value
-        self.context = context
-        self.inlineHeader = inlineHeader
-        self.elapsed = nil
-        self.timerStartedAt = nil
-        self.startedAt = nil
-    }
-
-    public init(type: MetricType, value: String, context: MetricContext, inlineHeader: Bool = false, elapsed: TimeInterval? = nil, timerStartedAt: Date? = nil, startedAt: Date? = nil) {
-        self.type = type
-        self.value = value
-        self.context = context
+        self.alignment = alignment
         self.inlineHeader = inlineHeader
         self.elapsed = elapsed
         self.timerStartedAt = timerStartedAt
@@ -92,7 +95,7 @@ public struct TrackingMetric: View {
                 valueText
             }
         } else {
-            VStack(alignment: .leading, spacing: context.spacing) {
+            VStack(alignment: alignment.horizontalAlignment, spacing: context.spacing) {
                 titleText
                 valueText
             }

@@ -43,8 +43,10 @@ struct TrackingView: View {
             
             liveTrackingDisplay
             
-            if isPaused {
+            if startTime != nil {
                 saveProgressGroup
+                    .opacity(isPaused ? 1 : 0)
+                    .allowsHitTesting(isPaused)
             }
             
             Spacer()
@@ -71,7 +73,11 @@ struct TrackingView: View {
             }
             isPaused = false
         }
+        .font(.title3.weight(.semibold))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
         .buttonStyle(.borderedProminent)
+        .controlSize(.large)
         .tint(.green)
         .disabled(startTime != nil)
     }
@@ -83,7 +89,11 @@ struct TrackingView: View {
             stopPedometerUpdates()
             endLiveActivity()
         }
+        .font(.title3.weight(.semibold))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
         .buttonStyle(.borderedProminent)
+        .controlSize(.large)
         .tint(.red)
         .disabled(startTime == nil || isPaused)
     }
@@ -101,13 +111,15 @@ struct TrackingView: View {
                         TrackingMetric(
                             type: .time,
                             value: TimeInterval(elapsed).stopwatchFormatted,
-                            context: .app
+                            context: .app,
+                            alignment: .center
                         )
                     } else {
                         TrackingMetric(
                             type: .time,
                             value: "",
                             context: .app,
+                            alignment: .center,
                             timerStartedAt: startTime
                         )
                     }
@@ -115,7 +127,8 @@ struct TrackingView: View {
                     TrackingMetric(
                         type: .steps,
                         value: "\(stepTracker.currentStepCount)",
-                        context: .app
+                        context: .app,
+                        alignment: .center
                     )
 
                     if let notice = trackingNotice() {
@@ -133,25 +146,14 @@ struct TrackingView: View {
     
     private var saveProgressGroup: some View {
         HStack(spacing: 12) {
-            Button("Save Progress") {
-                guard let start = startTime,
-                      let selectedGroup else { return }
-                
-                let endTime = isPaused ? (pausedDate ?? Date()) : Date()
-                let elapsed = endTime.timeIntervalSince(start)
-                let steps = max(0, stepTracker.currentStepCount)
-                
-                let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
-                selectedGroup.sessions.append(session)
-
-                resetSession()
-            }
-            .buttonStyle(.borderedProminent)
-            
             Button("Clear & Reset") {
                 showingClearConfirmation = true
             }
+            .font(.title3.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
             .buttonStyle(.bordered)
+            .controlSize(.large)
             .tint(.red)
             .confirmationDialog(
                 "Clear & reset this session?",
@@ -166,6 +168,27 @@ struct TrackingView: View {
             } message: {
                 Text("This will remove your current tracking session.")
             }
+            
+            Button("Save Progress") {
+                guard let start = startTime,
+                      let selectedGroup else { return }
+                
+                let endTime = isPaused ? (pausedDate ?? Date()) : Date()
+                let elapsed = endTime.timeIntervalSince(start)
+                let steps = max(0, stepTracker.currentStepCount)
+                
+                let session = WalkSession(start: start, duration: elapsed, stepCount: steps)
+                selectedGroup.sessions.append(session)
+
+                resetSession()
+            }
+            .font(.title3.weight(.semibold))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            
+            
         }
     }
     
